@@ -8,10 +8,22 @@ import { SignUpUserSteps } from "@/components/tutorial/sign-up-user-steps";
 import { hasEnvVars } from "@/lib/utils";
 import Link from "next/link";
 import { Suspense } from "react";
+import Grainient from "@/components/gradient";
+
 
 export default function Home() {
   return (
     <main className="min-h-screen flex flex-col items-center">
+      <div className="absolute inset-0 -z-10">
+        <Grainient
+          color1="#FF9FFC"
+          color2="#5227FF"
+          color3="#B497CF"
+          timeSpeed={0.25}
+          grainAmount={0.1}
+          zoom={0.9}
+        />
+      </div>
       <div className="flex-1 w-full flex flex-col gap-20 items-center">
         <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
           <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
@@ -53,6 +65,7 @@ export default function Home() {
           <ThemeSwitcher />
         </footer>
       </div>
+      
     </main>
   );
 }

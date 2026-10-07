@@ -16,8 +16,8 @@ export default function Home() {
     <main className="min-h-screen flex flex-col items-center">
       <div className="absolute inset-0 -z-10">
         <Grainient
-          color1="#C6FF34"
-          color2="#000000"
+          color1="#000000"
+          color2="#C6FF34"
           color3="#7FFF00"
           timeSpeed={0.25}
           grainAmount={0.1}

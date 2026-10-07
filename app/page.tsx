@@ -17,7 +17,7 @@ export default function Home() {
       <div className="absolute inset-0 -z-10">
         <Grainient
           color1="#000000"
-          color2="#C6FF34"
+          color2="#7FFF00"
           color3="#000000"
           timeSpeed={0.25}
           grainAmount={0.1}

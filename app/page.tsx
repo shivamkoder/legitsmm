@@ -11,7 +11,28 @@ import { Suspense } from "react";
 import Grainient from "@/components/gradient";
 import TechText from '@/components/headtxt';
 import { DrawCircleText } from "@/components/circletxt"; 
+import { FeatureSteps } from "@/components/steps";
 
+const features = [
+  { 
+    step: 'Step 1', 
+    title: 'Learn the Basics',
+    content: 'Start your Web3 journey by learning the basics of blockchain.', 
+    image: 'https://cdn.21st.dev/assets/mirror/ba/ba157d049e59513a30a7d4ec04fc9ea8af159f81cc9e54700ed127889b91d967.jpg' 
+  },
+  { 
+    step: 'Step 2',
+    title: 'Deep Dive',
+    content: 'Dive deep into blockchain fundamentals and smart contract development.',
+    image: 'https://cdn.21st.dev/assets/mirror/85/85e84077a6db13908b5d28903e8107f131e685fee136869651ae5eccda88a020.jpg'
+  },
+  { 
+    step: 'Step 3',
+    title: 'Build Projects',
+    content: 'Graduate with hands-on Web3 experience through building decentralized applications.',
+    image: 'https://cdn.21st.dev/assets/mirror/f6/f6d1e174377ea631cd11224860ab67347e8cc4844ad94d6d2dee6521b8b5dd55.jpg'
+  },
+]
 export default function Home() {
   return (
     <main className="min-h-screen flex flex-col items-center">

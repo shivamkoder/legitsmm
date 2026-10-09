@@ -88,7 +88,16 @@ export default function Home() {
       <div className="w-full">
         <DrawCircleText />
       </div>
-      
+      <section className="w-full max-w-7xl text-white">
+        <FeatureSteps
+          features={features}
+          title="How It Works"
+          autoPlayInterval={4000}
+        />
+      </section>
+
     </main>
+   
+
   );
 }

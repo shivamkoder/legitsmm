@@ -9,6 +9,8 @@ import { hasEnvVars } from "@/lib/utils";
 import Link from "next/link";
 import { Suspense } from "react";
 import Grainient from "@/components/gradient";
+import TechText from '@/components/headtxt';
+
 
 
 export default function Home() {
@@ -39,6 +41,30 @@ export default function Home() {
         </nav>
       </div>
         
+<div style={{ width: '100%', height: '480px', position: 'relative' }}>
+  <TechText
+    text="React Bits"
+    fontWeight={600}
+    fontSize={150}
+    reveal="letter"
+    dashLength={4}
+    dashGap={2}
+    specks={15}
+    fontFamily=""
+    color="#ffffff"
+    accentColor="#ffffff"
+    letterSpacing={-0.05}
+    reach={200}
+    softness={0.7}
+    strokeWidth={1.5}
+    speed={1}
+    lineStyle="dashed"
+    selection
+    labels
+    draggable
+    sweep
+/>
+</div>
       
     </main>
   );

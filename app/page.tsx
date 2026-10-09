@@ -64,6 +64,9 @@ export default function Home() {
     sweep
 />
 </div>
+      <div className="w-full">
+        <DrawCircleText />
+      </div>
       
     </main>
   );

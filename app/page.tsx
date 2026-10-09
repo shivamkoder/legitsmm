@@ -42,7 +42,7 @@ export default function Home() {
         
 <div style={{ width: '100%', height: '480px', position: 'relative' }}>
   <TechText
-    text="React Bits"
+    text="Legit SMM"
     fontWeight={600}
     fontSize={150}
     reveal="letter"

@@ -89,11 +89,14 @@ export default function Home() {
         <DrawCircleText />
       </div>
       <section className="w-full max-w-7xl text-white">
+          <Suspense fallback={null}>
+
         <FeatureSteps
           features={features}
           title="How It Works"
           autoPlayInterval={4000}
         />
+            </Suspense>
       </section>
 
     </main>

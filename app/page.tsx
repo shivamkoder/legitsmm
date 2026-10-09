@@ -10,8 +10,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import Grainient from "@/components/gradient";
 import TechText from '@/components/headtxt';
-
-
+import { DrawCircleText } from "@/components/circletxt"; 
 
 export default function Home() {
   return (

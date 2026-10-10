@@ -44,12 +44,7 @@ export function FeatureSteps({
   }, [progress, features.length, autoPlayInterval])
 
   return (
-    <div className={cn(
-  "w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center border-2 transition-all",
-  index === currentFeature
-    ? "bg-white border-white text-black scale-110"
-    : "bg-transparent border-white/30 text-white/50",
-)}>
+    <div className={cn("p-8 md:p-12 text-white", className)}>
       <div className="max-w-7xl mx-auto w-full">
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-10 text-center">
           {title}
@@ -67,10 +62,10 @@ export function FeatureSteps({
               >
                 <motion.div
                   className={cn(
-                    "w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center border-2",
+                    "w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center border-2 transition-all",
                     index === currentFeature
-                      ? "bg-primary border-primary text-primary-foreground scale-110"
-                      : "bg-muted border-muted-foreground",
+                      ? "bg-white border-white text-black scale-110"
+                      : "bg-transparent border-white/30 text-white/50",
                   )}
                 >
                   {index <= currentFeature ? (
@@ -116,7 +111,7 @@ export function FeatureSteps({
                         width={1000}
                         height={500}
                       />
-                      <div className="absolute bottom-0 left-0 right-0 h-2/3 bg-gradient-to-t from-background via-background/50 to-transparent" />
+                      <div className="absolute bottom-0 left-0 right-0 h-2/3 bg-gradient-to-t from-black via-black/50 to-transparent" />
                     </motion.div>
                   ),
               )}

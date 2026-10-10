@@ -45,6 +45,7 @@ export default function Home() {
             zoom={0.9}
           />
         </div>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-56 bg-gradient-to-b from-transparent via-black/70 to-black" />
 
         <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
           <div className="w-full max-w-5xl flex justify-end items-center p-3 px-5 text-sm">
@@ -88,6 +89,10 @@ export default function Home() {
           <DrawCircleText />
         </div>
       </section>
+     
+
+{/* Fade hero into the black features section */}
+
 
             {/* FEATURES */}
       <section className="w-full bg-black text-white">

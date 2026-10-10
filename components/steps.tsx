@@ -44,7 +44,12 @@ export function FeatureSteps({
   }, [progress, features.length, autoPlayInterval])
 
   return (
-    <div className={cn("p-8 md:p-12", className)}>
+    <div className={cn(
+  "w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center border-2 transition-all",
+  index === currentFeature
+    ? "bg-white border-white text-black scale-110"
+    : "bg-transparent border-white/30 text-white/50",
+)}>
       <div className="max-w-7xl mx-auto w-full">
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-10 text-center">
           {title}
@@ -79,7 +84,7 @@ export function FeatureSteps({
                   <h3 className="text-xl md:text-2xl font-semibold">
                     {feature.title || feature.step}
                   </h3>
-                  <p className="text-sm md:text-lg text-muted-foreground">
+                  <p className="text-sm md:text-lg text-white/60">
                     {feature.content}
                   </p>
                 </div>

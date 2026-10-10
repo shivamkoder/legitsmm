@@ -321,11 +321,8 @@ export default function SidebarNavPreview() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full min-h-[700px] bg-background p-4 md:p-8">
-      
-      
-      <div className="relative w-full max-w-4xl h-[700px] bg-card rounded-xl border border-border/50 flex overflow-hidden shadow-sm ring-1 ring-black/5 dark:ring-white/5">
-        
+   <div className="h-full w-full bg-background">
+  <div className="relative flex h-full w-full overflow-hidden bg-card">
         
         <div 
           className={`h-full transition-all duration-300 ease-in-out shrink-0 overflow-hidden bg-card/50 border-r border-border/50 ${

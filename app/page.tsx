@@ -12,7 +12,7 @@ import Grainient from "@/components/gradient";
 import TechText from '@/components/headtxt';
 import { DrawCircleText } from "@/components/circletxt"; 
 import { FeatureSteps } from "@/components/steps";
-
+import { Button } from "@/components/ui/button";
 const features = [
   { 
     step: 'Step 1', 
@@ -49,15 +49,15 @@ export default function Home() {
       <div className="flex-1 w-full flex flex-col gap-20 items-center">
         <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
           <div className="w-full max-w-5xl flex justify-end items-center p-3 px-5 text-sm">
-            
-            {!hasEnvVars ? (
-              <EnvVarWarning />
-            ) : (
-              <Suspense>
-                <AuthButton />
-              </Suspense>
-            )}
-          </div>
+  <div className="flex gap-2">
+    <Button asChild size="sm" variant="outline">
+      <Link href="/auth/login">Sign in</Link>
+    </Button>
+    <Button asChild size="sm" variant="default">
+      <Link href="/auth/sign-up">Sign up</Link>
+    </Button>
+  </div>
+</div>
         </nav>
       </div>
         

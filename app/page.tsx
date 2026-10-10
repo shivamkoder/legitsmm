@@ -89,15 +89,17 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FEATURES */}
-      <section className="w-full max-w-7xl text-white">
-        <Suspense fallback={null}>
-          <FeatureSteps
-            features={features}
-            title="How It Works"
-            autoPlayInterval={4000}
-          />
-        </Suspense>
+            {/* FEATURES */}
+      <section className="w-full bg-black text-white">
+        <div className="max-w-7xl mx-auto">
+          <Suspense fallback={null}>
+            <FeatureSteps
+              features={features}
+              title="How It Works"
+              autoPlayInterval={4000}
+            />
+          </Suspense>
+        </div>
       </section>
     </main>
    

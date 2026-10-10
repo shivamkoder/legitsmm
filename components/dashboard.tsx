@@ -313,14 +313,20 @@ export default function SidebarNavPreview() {
 
   const activeItem = flatMockData.find(i => i.id === activeId);
   const activeTitle = activeItem ? activeItem.title : 'Dashboard';
+  const router = useRouter();
 
-  const handleSelect = (id: string) => {
-    if (id === 'search') {
-      setIsSearchOpen(true);
-      return;
-    }
-    setActiveId(id);
-  };
+const handleSelect = async (id: string) => {
+  if (id === 'search') {
+    setIsSearchOpen(true);
+    return;
+  }
+  if (id === 'logout') {
+    await createClient().auth.signOut();
+    router.push('/auth/login');
+    return;
+  }
+  setActiveId(id);
+};
 
   return (
    <div className="h-full w-full bg-background">

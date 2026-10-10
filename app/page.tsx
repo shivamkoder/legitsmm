@@ -60,7 +60,7 @@ export default function Home() {
 </div>
         </nav>
 
-        <div style={{ width: "100%", height: "300px", position: "relative" }}>
+        <div style={{ width: "100%", height: "250px", position: "relative" }}>
           <TechText
             text="Legit SMM"
             fontWeight={600}

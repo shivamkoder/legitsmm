@@ -26,7 +26,7 @@ export default function ProtectedPage() {
           </div>
         }
       >
-        <AuthenticatedDashboard />
+        <SidebarNavPreview />
       </Suspense>
     </div>
   );

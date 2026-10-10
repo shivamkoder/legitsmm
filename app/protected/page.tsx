@@ -18,10 +18,10 @@ async function UserDetails() {
 
 export default function ProtectedPage() {
   return (
-    <div className="flex-1 w-full">
+    <div className="h-full w-full">
       <Suspense
         fallback={
-          <div className="flex h-[700px] items-center justify-center text-sm text-muted-foreground">
+          <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
             Loading dashboard...
           </div>
         }

@@ -1,10 +1,9 @@
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import { InfoIcon } from "lucide-react";
-import { FetchDataSteps } from "@/components/tutorial/fetch-data-steps";
 import { Suspense } from "react";
 import SidebarNavPreview from "@/components/dashboard";
+
 async function UserDetails() {
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getClaims();
@@ -18,10 +17,10 @@ async function UserDetails() {
 
 export default function ProtectedPage() {
   return (
-    <div className="h-full w-full">
+    <div className="h-full w-full bg-black text-[#7FFF00]">
       <Suspense
         fallback={
-          <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+          <div className="flex h-full items-center justify-center text-sm text-[#7FFF00]/60">
             Loading dashboard...
           </div>
         }

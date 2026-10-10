@@ -32,70 +32,72 @@ const features = [
 ]
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col items-center">
-      <div className="absolute inset-0 -z-10">
-        <Grainient
-          color1="#000000"
-          color2="#7FFF00"
-          color3="#000000"
-          timeSpeed={0.25}
-          grainAmount={0.1}
-          zoom={0.9}
-        />
-      </div>
-      <div className="flex-1 w-full flex flex-col gap-20 items-center">
+   <main className="min-h-screen flex flex-col items-center">
+      {/* HERO: gradient + nav + heading + circled text */}
+      <section className="relative w-full flex flex-col items-center overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <Grainient
+            color1="#000000"
+            color2="#7FFF00"
+            color3="#000000"
+            timeSpeed={0.25}
+            grainAmount={0.1}
+            zoom={0.9}
+          />
+        </div>
+
         <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
           <div className="w-full max-w-5xl flex justify-end items-center p-3 px-5 text-sm">
-  <div className="flex gap-2">
-    <Button asChild size="sm" variant="outline">
-      <Link href="/auth/login">Sign in</Link>
-    </Button>
-    <Button asChild size="sm" variant="default">
-      <Link href="/auth/sign-up">Sign up</Link>
-    </Button>
-  </div>
-</div>
+            {!hasEnvVars ? (
+              <EnvVarWarning />
+            ) : (
+              <Suspense>
+                <AuthButton />
+              </Suspense>
+            )}
+          </div>
         </nav>
-      </div>
-        
-<div style={{ width: '100%', height: '480px', position: 'relative' }}>
-  <TechText
-    text="Legit SMM"
-    fontWeight={600}
-    fontSize={150}
-    reveal="letter"
-    dashLength={4}
-    dashGap={2}
-    specks={15}
-    fontFamily=""
-    color="#ffffff"
-    accentColor="#ffffff"
-    letterSpacing={-0.05}
-    reach={200}
-    softness={0.7}
-    strokeWidth={1.5}
-    speed={1}
-    lineStyle="dashed"
-    selection
-    labels
-    draggable
-    sweep
-/>
-</div>
-      <div className="w-full">
-        <DrawCircleText />
-      </div>
-      <section className="w-full max-w-7xl text-white">
-          <Suspense fallback={null}>
 
-        <FeatureSteps
-          features={features}
-          title="How It Works"
-          autoPlayInterval={4000}
-        />
-            </Suspense>
+        <div style={{ width: "100%", height: "300px", position: "relative" }}>
+          <TechText
+            text="Legit SMM"
+            fontWeight={600}
+            fontSize={150}
+            reveal="letter"
+            dashLength={4}
+            dashGap={2}
+            specks={15}
+            fontFamily=""
+            color="#ffffff"
+            accentColor="#ffffff"
+            letterSpacing={-0.05}
+            reach={200}
+            softness={0.7}
+            strokeWidth={1.5}
+            speed={1}
+            lineStyle="dashed"
+            selection
+            labels
+            draggable
+            sweep
+          />
+        </div>
+
+        <div className="w-full">
+          <DrawCircleText />
+        </div>
       </section>
 
+      {/* FEATURES */}
+      <section className="w-full max-w-7xl text-white">
+        <Suspense fallback={null}>
+          <FeatureSteps
+            features={features}
+            title="How It Works"
+            autoPlayInterval={4000}
+          />
+        </Suspense>
+      </section>
     </main>
    
 

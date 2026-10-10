@@ -59,11 +59,11 @@ function NavItem({
       type="button"
       onClick={() => onSelect(item.id)}
       aria-current={isActive ? "page" : undefined}
-      className={`group flex w-full items-center justify-between px-2.5 py-[7px] rounded-[6px] cursor-pointer transition-all duration-200 select-none text-left
+      className={`group flex w-full items-center justify-between px-2.5 py-[7px] rounded-[6px] cursor-pointer transition-colors duration-200 select-none text-left outline-none focus-visible:ring-1 focus-visible:ring-[#7FFF00]/60
         ${
           isActive
-            ? "bg-black/5 dark:bg-white/10 text-foreground font-medium"
-            : "text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 hover:text-foreground/90"
+            ? "bg-[#7FFF00]/10 text-[#7FFF00] font-medium"
+            : "text-[#7FFF00]/60 hover:bg-[#7FFF00]/5 hover:text-[#7FFF00]"
         }
       `}
     >
@@ -71,15 +71,15 @@ function NavItem({
         <item.icon
           className={`w-[16px] h-[16px] shrink-0 transition-colors ${
             isActive
-              ? "text-foreground"
-              : "text-muted-foreground/70 group-hover:text-foreground/70"
+              ? "text-[#7FFF00]"
+              : "text-[#7FFF00]/50 group-hover:text-[#7FFF00]"
           }`}
           strokeWidth={1.5}
         />
         <span className="text-[13px] tracking-wide truncate">{item.title}</span>
       </span>
       {item.badge && (
-        <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-medium rounded-full bg-primary/10 text-primary">
+        <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-medium rounded-full bg-[#7FFF00]/15 text-[#7FFF00]">
           {item.badge}
         </span>
       )}
@@ -102,9 +102,9 @@ export function SidebarNav({
 
   return (
     <nav
-      className={`flex flex-col w-[260px] h-full bg-card/50 border-r border-border/50 p-3 font-sans ${className}`}
+      className={`flex flex-col w-[260px] h-full bg-black border-r border-[#7FFF00]/15 p-3 font-sans ${className}`}
     >
-      <div className="px-2.5 py-3 mb-3 text-[15px] font-semibold tracking-tight text-foreground">
+      <div className="px-2.5 py-3 mb-3 text-[15px] font-semibold tracking-tight text-[#7FFF00]">
         Legit SMM
       </div>
 
@@ -119,7 +119,7 @@ export function SidebarNav({
         ))}
       </div>
 
-      <div className="mt-auto pt-4 border-t border-border/50">
+      <div className="mt-auto pt-4 border-t border-[#7FFF00]/15">
         <NavItem item={logoutItem} activeId={currentId} onSelect={handleSelect} />
       </div>
     </nav>
@@ -144,10 +144,10 @@ export default function SidebarNavPreview() {
   };
 
   return (
-    <div className="h-full w-full bg-background">
-      <div className="relative flex h-full w-full overflow-hidden bg-card">
+    <div className="h-full w-full bg-black text-[#7FFF00]">
+      <div className="relative flex h-full w-full overflow-hidden bg-black">
         <div
-          className={`h-full transition-all duration-300 ease-in-out shrink-0 overflow-hidden bg-card/50 border-r border-border/50 ${
+          className={`h-full transition-all duration-300 ease-in-out shrink-0 overflow-hidden bg-black border-r border-[#7FFF00]/15 ${
             isOpen ? "w-[260px] opacity-100" : "w-0 opacity-0 border-none"
           }`}
         >
@@ -158,13 +158,13 @@ export default function SidebarNavPreview() {
           />
         </div>
 
-        <div className="flex-1 bg-black/[0.02] dark:bg-white/[0.02] flex flex-col min-w-0 transition-all duration-300">
-          <div className="h-14 border-b border-border/50 flex items-center px-4 justify-between bg-card shrink-0">
+        <div className="flex-1 bg-black flex flex-col min-w-0 transition-all duration-300">
+          <div className="h-14 border-b border-[#7FFF00]/15 flex items-center px-4 justify-between bg-black shrink-0">
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label={isOpen ? "Collapse sidebar" : "Expand sidebar"}
-                className="p-1.5 rounded-md text-muted-foreground hover:bg-black/5 dark:hover:bg-white/5 hover:text-foreground transition-colors"
+                className="p-1.5 rounded-md text-[#7FFF00]/60 hover:bg-[#7FFF00]/10 hover:text-[#7FFF00] transition-colors outline-none focus-visible:ring-1 focus-visible:ring-[#7FFF00]/60"
               >
                 {isOpen ? (
                   <PanelLeftClose className="w-[18px] h-[18px]" strokeWidth={1.5} />
@@ -172,34 +172,34 @@ export default function SidebarNavPreview() {
                   <PanelLeftOpen className="w-[18px] h-[18px]" strokeWidth={1.5} />
                 )}
               </button>
-              <span className="text-sm font-medium text-foreground truncate">
+              <span className="text-sm font-medium text-[#7FFF00] truncate">
                 {activeTitle}
               </span>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-primary/10 rounded-full border border-primary/20" />
+              <div className="w-8 h-8 bg-[#7FFF00]/10 rounded-full border border-[#7FFF00]/30" />
             </div>
           </div>
 
           <div className="p-6 md:p-8 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             <div className="flex items-center justify-between mb-8">
-              <div className="w-48 h-8 bg-black/5 dark:bg-white/5 rounded-md" />
+              <div className="w-48 h-8 bg-[#7FFF00]/5 rounded-md" />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div className="h-32 bg-card rounded-xl border border-border/50 shadow-sm" />
-              <div className="h-32 bg-card rounded-xl border border-border/50 shadow-sm" />
+              <div className="h-32 bg-[#050a02] rounded-xl border border-[#7FFF00]/15" />
+              <div className="h-32 bg-[#050a02] rounded-xl border border-[#7FFF00]/15" />
             </div>
 
-            <div className="w-full bg-card rounded-xl border border-border/50 shadow-sm p-6">
-              <div className="w-1/3 h-5 bg-black/5 dark:bg-white/5 rounded-md mb-6" />
-              <div className="w-full h-[1px] bg-border/50 mb-6" />
+            <div className="w-full bg-[#050a02] rounded-xl border border-[#7FFF00]/15 p-6">
+              <div className="w-1/3 h-5 bg-[#7FFF00]/5 rounded-md mb-6" />
+              <div className="w-full h-[1px] bg-[#7FFF00]/15 mb-6" />
               <div className="flex flex-col gap-4">
                 {[0, 1, 2, 3].map((n) => (
                   <div
                     key={n}
-                    className="w-full h-12 bg-black/5 dark:bg-white/5 rounded-lg"
+                    className="w-full h-12 bg-[#7FFF00]/5 rounded-lg"
                   />
                 ))}
               </div>

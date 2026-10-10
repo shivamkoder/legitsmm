@@ -4,8 +4,9 @@ import { motion } from "motion/react";
 
 export const DrawCircleText = () => {
   return (
-    <div className="grid place-content-center bg-emerald-950 px-4 py-24 text-yellow-50">
-      <h1 className="max-w-2xl text-center text-5xl leading-snug">
+    <div className="grid place-content-center px-4 py-10 text-yellow-50">
+      <h1 className="max-w-2xl text-center text-5xl leading-snug drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
+        
         Scale your{" "}
         <span className="relative">
           Marketing

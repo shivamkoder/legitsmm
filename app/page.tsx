@@ -85,7 +85,7 @@ export default function Home() {
           />
         </div>
 
-        <div className="w-full">
+        <div className="w-full pb-24 md:pb-32">
           <DrawCircleText />
         </div>
       </section>

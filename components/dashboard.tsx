@@ -304,7 +304,7 @@ export default function SidebarNavPreview() {
   <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
     <OrderForm />
     {/* Step 4: service details panel goes here */}
-    <div />
+    
   </div>
   </div>
 </div>
@@ -312,6 +312,6 @@ export default function SidebarNavPreview() {
           </div>
         </div>
       </div>
-    </div>
+    
   );
 }

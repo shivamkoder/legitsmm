@@ -22,7 +22,7 @@ import {
   Plus,
 } from "lucide-react";
 import { StatsCard } from "@/components/statscard";
-
+import { PlatformFilter } from "@/components/platformfilter";
 export type NavItemData = {
   id: string;
   title: string;
@@ -234,6 +234,7 @@ function HeaderActions({ onSelect }: { onSelect: (id: string) => void }) {
 export default function SidebarNavPreview() {
   const [isOpen, setIsOpen] = useState(true);
   const [activeId, setActiveId] = useState("new-order");
+  const [platform, setPlatform] = useState("all");
   const router = useRouter();
 
   const activeTitle =
@@ -291,8 +292,11 @@ export default function SidebarNavPreview() {
             </div>
 
            <div className="mb-6">
-  <StatsCard onNavigate={handleSelect} />
-</div>
+            <StatsCard onNavigate={handleSelect} />
+            </div>
+            <div className="mb-6">
+            <PlatformFilter value={platform} onChange={setPlatform} />
+            </div>
 
             <div className="w-full bg-[#050a02] rounded-xl border border-[#7FFF00]/15 p-6">
               <div className="w-1/3 h-5 bg-[#7FFF00]/5 rounded-md mb-6" />

@@ -21,6 +21,7 @@ import {
   ChevronDown,
   Plus,
 } from "lucide-react";
+import { StatsCard } from "@/components/statscard";
 
 export type NavItemData = {
   id: string;
@@ -289,10 +290,9 @@ export default function SidebarNavPreview() {
               <div className="w-48 h-8 bg-[#7FFF00]/5 rounded-md" />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div className="h-32 bg-[#050a02] rounded-xl border border-[#7FFF00]/15" />
-              <div className="h-32 bg-[#050a02] rounded-xl border border-[#7FFF00]/15" />
-            </div>
+           <div className="mb-6">
+  <StatsCard onNavigate={handleSelect} />
+</div>
 
             <div className="w-full bg-[#050a02] rounded-xl border border-[#7FFF00]/15 p-6">
               <div className="w-1/3 h-5 bg-[#7FFF00]/5 rounded-md mb-6" />

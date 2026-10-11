@@ -298,12 +298,14 @@ export default function SidebarNavPreview() {
             <div className="mb-6">
             <PlatformFilter value={platform} onChange={setPlatform} />
             </div>
+            <div className="w-full bg-[#050a02] rounded-xl border border-[#7FFF00]/15 p-6">
 
             <div className="w-full rounded-xl border border-[#7FFF00]/15 bg-[#050a02] p-5 md:p-6">
   <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
     <OrderForm />
     {/* Step 4: service details panel goes here */}
     <div />
+  </div>
   </div>
 </div>
             </div>

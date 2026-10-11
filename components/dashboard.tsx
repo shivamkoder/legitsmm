@@ -17,6 +17,9 @@ import {
   LogOut,
   PanelLeftClose,
   PanelLeftOpen,
+  Wallet,
+  ChevronDown,
+  Plus,
 } from "lucide-react";
 
 export type NavItemData = {
@@ -125,6 +128,107 @@ export function SidebarNav({
     </nav>
   );
 }
+function HeaderActions({ onSelect }: { onSelect: (id: string) => void }) {
+  const [open, setOpen] = useState<"wallet" | "profile" | null>(null);
+  const [email, setEmail] = useState("");
+  const ref = useRef<HTMLDivElement>(null);
+  const balance = 0; // replace with real balance from Supabase later
+
+  useEffect(() => {
+    createClient()
+      .auth.getUser()
+      .then(({ data }) => setEmail(data.user?.email ?? ""));
+  }, []);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(null);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const initial = email ? email[0].toUpperCase() : "U";
+  const menuClass =
+    "absolute right-0 top-full mt-2 w-56 rounded-xl border border-[#7FFF00]/20 bg-[#050a02] p-2 shadow-lg z-50";
+
+  return (
+    <div ref={ref} className="flex items-center gap-3">
+      {/* Wallet */}
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => setOpen(open === "wallet" ? null : "wallet")}
+          className="flex items-center gap-1.5 outline-none focus-visible:ring-1 focus-visible:ring-[#7FFF00]/60 rounded-full"
+          aria-label="Wallet"
+        >
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#7FFF00]/15 border border-[#7FFF00]/30">
+            <Wallet className="h-4 w-4 text-[#7FFF00]" strokeWidth={1.5} />
+          </span>
+          <span className="text-sm font-medium text-[#7FFF00]">
+            ${balance}
+          </span>
+          <ChevronDown className="h-4 w-4 text-[#7FFF00]/60" />
+        </button>
+
+        {open === "wallet" && (
+          <div className={menuClass}>
+            <div className="px-2 py-2">
+              <p className="text-xs text-[#7FFF00]/60">Balance</p>
+              <p className="text-lg font-semibold text-[#7FFF00]">${balance}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(null);
+                onSelect("add-funds");
+              }}
+              className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-[13px] text-[#7FFF00] hover:bg-[#7FFF00]/10"
+            >
+              <Plus className="h-4 w-4" strokeWidth={1.5} />
+              Add funds
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Profile */}
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => setOpen(open === "profile" ? null : "profile")}
+          className="flex items-center gap-1.5 outline-none focus-visible:ring-1 focus-visible:ring-[#7FFF00]/60 rounded-full"
+          aria-label="Profile"
+        >
+          <span className="relative flex h-9 w-9 items-center justify-center rounded-full bg-[#7FFF00]/15 border border-[#7FFF00]/30 text-sm font-semibold text-[#7FFF00]">
+            {initial}
+            <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-[#7FFF00] ring-2 ring-black" />
+          </span>
+          <ChevronDown className="h-4 w-4 text-[#7FFF00]/60" />
+        </button>
+
+        {open === "profile" && (
+          <div className={menuClass}>
+            <div className="px-2 py-2 border-b border-[#7FFF00]/15 mb-1">
+              <p className="text-xs text-[#7FFF00]/60">Signed in as</p>
+              <p className="truncate text-[13px] text-[#7FFF00]">
+                {email || "..."}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => onSelect("logout")}
+              className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-[13px] text-[#7FFF00] hover:bg-[#7FFF00]/10"
+            >
+              <LogOut className="h-4 w-4" strokeWidth={1.5} />
+              Log out
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function SidebarNavPreview() {
   const [isOpen, setIsOpen] = useState(true);
@@ -177,9 +281,7 @@ export default function SidebarNavPreview() {
               </span>
             </div>
 
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-[#7FFF00]/10 rounded-full border border-[#7FFF00]/30" />
-            </div>
+            <HeaderActions onSelect={handleSelect} />
           </div>
 
           <div className="p-6 md:p-8 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">

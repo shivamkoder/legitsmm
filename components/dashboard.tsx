@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import React, { useState } from "react";
+import React, { useState,useEffect, useRef  } from "react";
 import {
   ShoppingCart,
   ListPlus,

@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { StatsCard } from "@/components/statscard";
 import { PlatformFilter } from "@/components/platformfilter";
+import { OrderForm } from "@/components/orderform";
 export type NavItemData = {
   id: string;
   title: string;
@@ -298,17 +299,13 @@ export default function SidebarNavPreview() {
             <PlatformFilter value={platform} onChange={setPlatform} />
             </div>
 
-            <div className="w-full bg-[#050a02] rounded-xl border border-[#7FFF00]/15 p-6">
-              <div className="w-1/3 h-5 bg-[#7FFF00]/5 rounded-md mb-6" />
-              <div className="w-full h-[1px] bg-[#7FFF00]/15 mb-6" />
-              <div className="flex flex-col gap-4">
-                {[0, 1, 2, 3].map((n) => (
-                  <div
-                    key={n}
-                    className="w-full h-12 bg-[#7FFF00]/5 rounded-lg"
-                  />
-                ))}
-              </div>
+            <div className="w-full rounded-xl border border-[#7FFF00]/15 bg-[#050a02] p-5 md:p-6">
+  <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <OrderForm />
+    {/* Step 4: service details panel goes here */}
+    <div />
+  </div>
+</div>
             </div>
           </div>
         </div>

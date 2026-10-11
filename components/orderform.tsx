@@ -241,4 +241,40 @@ export function OrderForm() {
           />
           <button
             type="button"
-            onClick={() =>
+            onClick={() => adjust(step)}
+            aria-label="Increase quantity"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#7FFF00] text-black hover:bg-[#7FFF00]/85"
+          >
+            <Plus className="h-4 w-4" strokeWidth={2.5} />
+          </button>
+        </div>
+        {service && (
+          <p className="mt-1.5 text-xs text-white/40">
+            Min: {service.min.toLocaleString()} - Max: {service.max.toLocaleString()}
+          </p>
+        )}
+      </div>
+
+      {/* Charge */}
+      <div>
+        <Label>Charge</Label>
+        <div className={`${fieldBase} px-4 py-3.5`}>
+          <input
+            type="text"
+            readOnly
+            value={qty > 0 ? `$${charge.toFixed(2)}` : ""}
+            className="w-full bg-transparent outline-none"
+          />
+        </div>
+      </div>
+
+      {/* Submit */}
+      <button
+        type="submit"
+        className="w-full rounded-xl bg-[#7FFF00] py-3.5 text-[13px] font-semibold text-black transition-colors hover:bg-[#7FFF00]/85 outline-none focus-visible:ring-2 focus-visible:ring-[#7FFF00]/60"
+      >
+        Submit
+      </button>
+    </form>
+  );
+}

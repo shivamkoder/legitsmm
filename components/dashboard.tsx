@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import React, { useState,useEffect, useRef  } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   ShoppingCart,
   ListPlus,
@@ -24,6 +24,7 @@ import {
 import { StatsCard } from "@/components/statscard";
 import { PlatformFilter } from "@/components/platformfilter";
 import { OrderForm } from "@/components/orderform";
+
 export type NavItemData = {
   id: string;
   title: string;
@@ -130,6 +131,7 @@ export function SidebarNav({
     </nav>
   );
 }
+
 function HeaderActions({ onSelect }: { onSelect: (id: string) => void }) {
   const [open, setOpen] = useState<"wallet" | "profile" | null>(null);
   const [email, setEmail] = useState("");
@@ -253,6 +255,7 @@ export default function SidebarNavPreview() {
   return (
     <div className="h-full w-full bg-black text-[#7FFF00]">
       <div className="relative flex h-full w-full overflow-hidden bg-black">
+        {/* Sidebar */}
         <div
           className={`h-full transition-all duration-300 ease-in-out shrink-0 overflow-hidden bg-black border-r border-[#7FFF00]/15 ${
             isOpen ? "w-[260px] opacity-100" : "w-0 opacity-0 border-none"
@@ -265,7 +268,9 @@ export default function SidebarNavPreview() {
           />
         </div>
 
+        {/* Main area */}
         <div className="flex-1 bg-black flex flex-col min-w-0 transition-all duration-300">
+          {/* Top bar */}
           <div className="h-14 border-b border-[#7FFF00]/15 flex items-center px-4 justify-between bg-black shrink-0">
             <div className="flex items-center gap-3">
               <button
@@ -287,31 +292,34 @@ export default function SidebarNavPreview() {
             <HeaderActions onSelect={handleSelect} />
           </div>
 
-          <div className="p-6 md:p-8 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            <div className="flex items-center justify-between mb-8">
-              <div className="w-48 h-8 bg-[#7FFF00]/5 rounded-md" />
-            </div>
+          {/* Page content */}
+          <div className="flex-1 min-h-0 p-6 md:p-8 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            {activeId === "new-order" ? (
+              <>
+                <div className="mb-6">
+                  <StatsCard onNavigate={handleSelect} />
+                </div>
 
-           <div className="mb-6">
-            <StatsCard onNavigate={handleSelect} />
-            </div>
-            <div className="mb-6">
-            <PlatformFilter value={platform} onChange={setPlatform} />
-            </div>
-            <div className="w-full bg-[#050a02] rounded-xl border border-[#7FFF00]/15 p-6">
+                <div className="mb-6">
+                  <PlatformFilter value={platform} onChange={setPlatform} />
+                </div>
 
-            <div className="w-full rounded-xl border border-[#7FFF00]/15 bg-[#050a02] p-5 md:p-6">
-  <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-    <OrderForm />
-    {/* Step 4: service details panel goes here */}
-    
-  </div>
-  </div>
-</div>
-            </div>
+                <div className="w-full rounded-xl border border-[#7FFF00]/15 bg-[#050a02] p-5 md:p-6">
+                  <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                    <OrderForm />
+                    {/* Step 4: service details panel goes here */}
+                    <div />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="flex h-64 items-center justify-center rounded-xl border border-[#7FFF00]/15 bg-[#050a02] text-sm text-[#7FFF00]/60">
+                {activeTitle} page coming soon
+              </div>
+            )}
           </div>
         </div>
       </div>
-    
+    </div>
   );
 }

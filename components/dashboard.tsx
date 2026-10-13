@@ -26,6 +26,7 @@ import { PlatformFilter } from "@/components/platformfilter";
 import { OrderForm } from "@/components/orderform";
 import { AddFunds } from "@/components/addfunds";
 import { Orders } from "@/components/orders";
+import { Services } from "@/components/services";
 
 export type NavItemData = {
   id: string;
@@ -318,7 +319,9 @@ export default function SidebarNavPreview() {
               <AddFunds />
             ) : activeId === "orders" ? (
               <Orders />
-                ) :
+                ) :activeId === "services" ? (
+  <Services onNavigate={handleSelect} />
+) : 
               
               
               (

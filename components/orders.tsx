@@ -27,6 +27,7 @@ export type Order = {
   charge: number;
   startCount: number;
   quantity: number;
+  estTime?: string; // e.g. "1-3 hours", "Up to 24h"
   status: Status;
 };
 
@@ -67,7 +68,7 @@ const pillClass = (active: boolean) =>
 
 // Grid shared by header and rows so columns line up.
 const cols =
-  "grid grid-cols-[70px_minmax(160px,2fr)_minmax(140px,2fr)_90px_100px_90px_110px] items-center gap-4 px-5";
+  "grid grid-cols-[70px_minmax(160px,2fr)_minmax(140px,2fr)_90px_100px_90px_120px_110px] items-center gap-4 px-5";
 
 export function Orders({ orders = [] }: { orders?: Order[] }) {
   // TODO: load orders from Supabase and pass them in
@@ -118,7 +119,7 @@ export function Orders({ orders = [] }: { orders?: Order[] }) {
       {/* Table */}
       <div className="overflow-hidden rounded-2xl border border-[#7FFF00]/15 bg-[#050a02]">
         <div className="overflow-x-auto">
-          <div className="min-w-[860px]">
+          <div className="min-w-[980px]">
             <div className={`${cols} h-11 bg-black text-[13px] font-semibold text-white`}>
               <span>ID</span>
               <span>Service</span>
@@ -126,6 +127,7 @@ export function Orders({ orders = [] }: { orders?: Order[] }) {
               <span>Charge</span>
               <span>Start count</span>
               <span>Quantity</span>
+              <span>Est. time</span>
               <span>Status</span>
             </div>
 
@@ -161,6 +163,7 @@ export function Orders({ orders = [] }: { orders?: Order[] }) {
                   <span>${o.charge.toFixed(2)}</span>
                   <span>{o.startCount.toLocaleString()}</span>
                   <span>{o.quantity.toLocaleString()}</span>
+                  <span className="text-white/60">{o.estTime ?? "-"}</span>
                   <span
                     className={`w-fit rounded-full px-2.5 py-1 text-[11px] font-medium ${statusStyle[o.status]}`}
                   >

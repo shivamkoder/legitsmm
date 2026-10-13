@@ -24,6 +24,7 @@ import {
 import { StatsCard } from "@/components/statscard";
 import { PlatformFilter } from "@/components/platformfilter";
 import { OrderForm } from "@/components/orderform";
+import { AddFunds } from "@/components/addfunds";
 
 export type NavItemData = {
   id: string;
@@ -312,6 +313,8 @@ export default function SidebarNavPreview() {
                   </div>
                 </div>
               </>
+            ) : activeId === "add-funds" ? (
+              <AddFunds />
             ) : (
               <div className="flex h-64 items-center justify-center rounded-xl border border-[#7FFF00]/15 bg-[#050a02] text-sm text-[#7FFF00]/60">
                 {activeTitle} page coming soon

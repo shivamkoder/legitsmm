@@ -114,7 +114,7 @@ export function SidebarNav({
       className={`flex flex-col w-[260px] h-full bg-black border-r border-[#7FFF00]/15 p-3 font-sans ${className}`}
     >
       <div className="mb-3 flex items-center gap-1.5 px-2.5 py-3 text-[15px] font-semibold tracking-tight text-[#7FFF00]">
-            <img src="/legit-logo.png" alt="Legit" className="h-5 w-auto" />
+            <img src="@/components/legit-logo.png" alt="Legit" className="h-5 w-auto" />
         <span>SMM</span>
         </div>
 

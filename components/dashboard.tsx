@@ -27,8 +27,7 @@ import { OrderForm } from "@/components/orderform";
 import { AddFunds } from "@/components/addfunds";
 import { Orders } from "@/components/orders";
 import { Services } from "@/components/services";
-import Image from "next/image";
-import legitLogo from "@/components/legit-logo.png";
+
 
 export type NavItemData = {
   id: string;

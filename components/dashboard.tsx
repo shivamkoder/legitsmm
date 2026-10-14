@@ -113,9 +113,10 @@ export function SidebarNav({
     <nav
       className={`flex flex-col w-[260px] h-full bg-black border-r border-[#7FFF00]/15 p-3 font-sans ${className}`}
     >
-      <div className="px-2.5 py-3 mb-3 text-[15px] font-semibold tracking-tight text-[#7FFF00]">
-        Legit SMM
-      </div>
+      <div className="mb-3 flex items-center gap-1.5 px-2.5 py-3 text-[15px] font-semibold tracking-tight text-[#7FFF00]">
+            <img src="/legit-logo.png" alt="Legit" className="h-5 w-auto" />
+        <span>SMM</span>
+        </div>
 
       <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] flex flex-col gap-0.5">
         {navItems.map((item) => (

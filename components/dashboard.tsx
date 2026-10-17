@@ -28,7 +28,7 @@ import { OrderForm } from "@/components/orderform";
 import { AddFunds } from "@/components/addfunds";
 import { Orders } from "@/components/orders";
 import { Services } from "@/components/services";
-import { LuckSpin } from "@/components/luckspin";
+import { LuckSpin } from "@/components/luckyspin";
 
 export type NavItemData = {
   id: string;

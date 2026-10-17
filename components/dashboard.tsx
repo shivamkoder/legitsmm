@@ -10,6 +10,7 @@ import {
   Handshake,
   ShoppingBag,
   CircleDollarSign,
+  Dices,
   Users,
   Store,
   Code,
@@ -27,7 +28,7 @@ import { OrderForm } from "@/components/orderform";
 import { AddFunds } from "@/components/addfunds";
 import { Orders } from "@/components/orders";
 import { Services } from "@/components/services";
-
+import { LuckSpin } from "@/components/luckspin";
 
 export type NavItemData = {
   id: string;
@@ -42,9 +43,10 @@ const navItems: NavItemData[] = [
   { id: "mass-order", title: "Mass order", icon: ListPlus },
   { id: "services", title: "Services", icon: Layers },
   { id: "updates", title: "Updates", icon: Bell },
- { id: "become-provider", title: "Become a provider", icon: Handshake },
+  { id: "become-provider", title: "Become a provider", icon: Handshake },
   { id: "orders", title: "Orders", icon: ShoppingBag },
   { id: "add-funds", title: "Add funds", icon: CircleDollarSign },
+  { id: "luck-spin", title: "Luck spin", icon: Dices },
   { id: "affiliates", title: "Affiliates", icon: Users },
   { id: "child-panel", title: "Child panel", icon: Store },
   { id: "api", title: "API", icon: Code },
@@ -115,9 +117,9 @@ export function SidebarNav({
       className={`flex flex-col w-[260px] h-full bg-black border-r border-[#7FFF00]/15 p-3 font-sans ${className}`}
     >
       <div className="mb-3 flex items-center gap-1.5 px-2.5 py-3 text-[15px] font-semibold tracking-tight text-[#7FFF00]">
-            <img src="/legit-logo.png" alt="Legit" className="h-5 w-auto" />
+        <img src="/legit-logo.png" alt="Legit" className="h-5 w-auto" />
         <span>SMM</span>
-        </div>
+      </div>
 
       <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] flex flex-col gap-0.5">
         {navItems.map((item) => (
@@ -321,12 +323,11 @@ export default function SidebarNavPreview() {
               <AddFunds />
             ) : activeId === "orders" ? (
               <Orders />
-                ) :activeId === "services" ? (
-  <Services onNavigate={handleSelect} />
-) : 
-              
-              
-              (
+            ) : activeId === "services" ? (
+              <Services onNavigate={handleSelect} />
+            ) : activeId === "luck-spin" ? (
+              <LuckSpin points={0} />
+            ) : (
               <div className="flex h-64 items-center justify-center rounded-xl border border-[#7FFF00]/15 bg-[#050a02] text-sm text-[#7FFF00]/60">
                 {activeTitle} page coming soon
               </div>

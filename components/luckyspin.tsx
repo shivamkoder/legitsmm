@@ -155,3 +155,85 @@ export function LuckSpin({ points = 0 }: { points?: number }) {
 
         <div className="mt-6 min-h-[52px] text-center">
           {result ? (
+            result.kind === "none" ? (
+              <p className="text-sm text-white/70">No luck this time. Try again!</p>
+            ) : (
+              <p className="text-lg font-semibold text-[#7FFF00]">
+                You won {result.label}!
+              </p>
+            )
+          ) : (
+            <p className="text-sm text-white/50">
+              {freeAvailable
+                ? "Your free daily spin is ready."
+                : `Extra spins cost ${SPIN_COST} points.`}
+            </p>
+          )}
+          {error && <p className="mt-1 text-xs text-red-400">{error}</p>}
+        </div>
+
+        <button
+          type="button"
+          onClick={spin}
+          disabled={spinning || !canPay}
+          className="mt-2 flex items-center gap-2 rounded-xl bg-[#7FFF00] px-8 py-3 text-[13px] font-semibold text-black transition-colors hover:bg-[#7FFF00]/85 disabled:opacity-50 outline-none focus-visible:ring-2 focus-visible:ring-[#7FFF00]/60"
+        >
+          <Dices className="h-4 w-4" strokeWidth={2} />
+          {spinning ? "Spinning..." : freeAvailable ? "Free spin" : `Spin (${SPIN_COST} pts)`}
+        </button>
+      </div>
+
+      {/* Right column */}
+      <div className="flex flex-col gap-6">
+        <div className={`${card} overflow-hidden`}>
+          <div className="flex items-center gap-3 border-b border-[#7FFF00]/15 px-5 py-4">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#7FFF00]/15">
+              <Trophy className="h-4 w-4 text-[#7FFF00]" strokeWidth={1.5} />
+            </span>
+            <h2 className="text-base font-semibold text-white">Prizes</h2>
+          </div>
+          <div className="grid grid-cols-2 gap-3 p-5 sm:grid-cols-4">
+            {prizes
+              .filter((p) => p.kind !== "none")
+              .map((p) => (
+                <div
+                  key={p.id}
+                  className="rounded-xl border border-[#7FFF00]/15 bg-black/40 py-3 text-center text-[13px] font-semibold text-[#7FFF00]"
+                >
+                  {p.label}
+                </div>
+              ))}
+          </div>
+        </div>
+
+        <div className={`${card} overflow-hidden`}>
+          <div className="flex items-center gap-3 border-b border-[#7FFF00]/15 px-5 py-4">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#7FFF00]/15">
+              <History className="h-4 w-4 text-[#7FFF00]" strokeWidth={1.5} />
+            </span>
+            <h2 className="text-base font-semibold text-white">Recent spins</h2>
+          </div>
+          {history.length === 0 ? (
+            <div className="flex h-40 items-center justify-center text-[13px] text-white/60">
+              No spins yet.
+            </div>
+          ) : (
+            <ul>
+              {history.map((h) => (
+                <li
+                  key={h.id}
+                  className="flex items-center justify-between border-t border-[#7FFF00]/10 px-5 py-3 text-[13px] first:border-t-0"
+                >
+                  <span className={h.prize.kind === "none" ? "text-white/50" : "text-[#7FFF00]"}>
+                    {h.prize.label}
+                  </span>
+                  <span className="text-white/40">{h.at}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

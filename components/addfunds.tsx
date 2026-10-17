@@ -7,9 +7,7 @@ import {
   CreditCard,
   FileSearch,
   Globe,
-  History,
   Landmark,
-  MessageSquare,
   Search,
   Smartphone,
   Ticket,
@@ -434,8 +432,6 @@ export function AddFunds({ deposits = [] }: { deposits?: Deposit[] }) {
         : "border-[#7FFF00]/15 bg-black/60 text-white/80 hover:border-[#7FFF00]/30 hover:text-white"
     }`;
 
-  const recent = deposits.slice(0, 5);
-
   return (
     <div className="flex flex-col gap-6">
       <FillBalanceHeader tab={tab} onTab={setTab} />
@@ -455,196 +451,125 @@ export function AddFunds({ deposits = [] }: { deposits?: Deposit[] }) {
             />
           </div>
 
-          <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
-            {/* Payment details card */}
-            <div className={`${card} p-5 md:p-6`}>
-              <p className="mb-2 text-[13px] font-medium text-white">Instruction</p>
-              <div className="max-h-[220px] min-h-[60px] space-y-3 overflow-y-auto rounded-xl border border-[#7FFF00]/10 bg-gradient-to-r from-[#7FFF00]/[0.03] via-[#7FFF00]/[0.07] to-[#7FFF00]/[0.03] px-4 py-4 text-center text-[13px] leading-relaxed text-white/80">
-                {method.instruction.map((line, i) => (
-                  <p key={i}>{line}</p>
-                ))}
-              </div>
+          {/* Payment details card */}
+          <div className={`${card} p-5 md:p-6`}>
+            <p className="mb-2 text-[13px] font-medium text-white">Instruction</p>
+            <div className="max-h-[220px] min-h-[60px] space-y-3 overflow-y-auto rounded-xl border border-[#7FFF00]/10 bg-gradient-to-r from-[#7FFF00]/[0.03] via-[#7FFF00]/[0.07] to-[#7FFF00]/[0.03] px-4 py-4 text-center text-[13px] leading-relaxed text-white/80">
+              {method.instruction.map((line, i) => (
+                <p key={i}>{line}</p>
+              ))}
+            </div>
 
-              {/* Discount code */}
-              <div className="mt-4 rounded-xl border border-dashed border-[#7FFF00]/20 bg-black/30">
-                <button
-                  type="button"
-                  onClick={() => setCodeOpen((o) => !o)}
-                  aria-expanded={codeOpen}
-                  className="flex w-full items-center justify-between rounded-xl px-3 py-3 text-left outline-none focus-visible:ring-1 focus-visible:ring-[#7FFF00]/60"
-                >
-                  <span className="flex items-center gap-3 text-[13px] font-medium text-white">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#7FFF00]/15">
-                      <Ticket className="h-4 w-4 text-[#7FFF00]" strokeWidth={1.5} />
-                    </span>
-                    Have a discount code?
-                  </span>
-                  <ChevronDown
-                    className={`h-4 w-4 text-[#7FFF00]/60 transition-transform ${
-                      codeOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-                {codeOpen && (
-                  <div className="px-3 pb-3">
-                    <div className={`${field} px-4`}>
-                      <input
-                        type="text"
-                        value={code}
-                        onChange={(e) => setCode(e.target.value)}
-                        placeholder="Enter code"
-                        className="w-full bg-transparent py-3 outline-none placeholder:text-white/40"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Presets */}
-              <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                {presets.map((p) => (
-                  <button
-                    key={p}
-                    type="button"
-                    onClick={() => pickPreset(p)}
-                    aria-pressed={!custom && amount === String(p)}
-                    className={presetClass(!custom && amount === String(p))}
-                  >
-                    {p}
-                  </button>
-                ))}
-                <button
-                  type="button"
-                  onClick={pickCustom}
-                  aria-pressed={custom}
-                  className={presetClass(custom)}
-                >
-                  Custom
-                </button>
-              </div>
-
-              {/* Amount */}
-              <p className="mb-2 mt-6 text-[13px] font-medium text-white">Amount</p>
-              <div className={`${field} px-4`}>
-                <span className="text-white/40">$</span>
-                <input
-                  ref={amountRef}
-                  type="number"
-                  inputMode="decimal"
-                  min={method.min}
-                  max={method.max}
-                  value={amount}
-                  onChange={(e) => {
-                    setAmount(e.target.value);
-                    setCustom(!presets.includes(Number(e.target.value)));
-                  }}
-                  className="w-full bg-transparent px-2 py-3.5 outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                />
-              </div>
-              <p className="mt-1.5 text-xs text-white/40">
-                Min: ${method.min} - Max: {method.max ? `$${method.max}` : "Unlimited"}
-              </p>
-
-              {/* Summary */}
-              <div className="mt-5 overflow-hidden rounded-xl border border-[#7FFF00]/15">
-                <div className="flex items-center justify-between bg-black/40 px-4 py-3.5 text-[13px]">
-                  <span className="text-white/50">Deposit</span>
-                  <span className="font-semibold text-white">{money(value)}</span>
-                </div>
-                {percent > 0 && (
-                  <div className="flex items-center justify-between border-t border-[#7FFF00]/10 bg-black/40 px-4 py-3 text-[13px]">
-                    <span className="text-white/50">Bonus ({percent}%)</span>
-                    <span className="font-semibold text-[#7FFF00]">+{money(bonus)}</span>
-                  </div>
-                )}
-                <div className="flex items-center justify-between border-t border-[#7FFF00]/15 bg-gradient-to-r from-[#7FFF00]/10 to-[#7FFF00]/[0.03] px-4 py-4">
-                  <span className="text-[11px] font-semibold uppercase tracking-widest text-[#7FFF00]/80">
-                    You receive
-                  </span>
-                  <span className="text-2xl font-bold text-[#7FFF00]">{money(receive)}</span>
-                </div>
-              </div>
-
-              {error && <p className="mt-3 text-xs text-red-400">{error}</p>}
-
+            {/* Discount code */}
+            <div className="mt-4 rounded-xl border border-dashed border-[#7FFF00]/20 bg-black/30">
               <button
                 type="button"
-                onClick={handlePay}
-                disabled={loading || !method.enabled}
-                className="mt-5 w-full rounded-xl bg-[#7FFF00] py-3.5 text-[13px] font-semibold text-black transition-colors hover:bg-[#7FFF00]/85 outline-none focus-visible:ring-2 focus-visible:ring-[#7FFF00]/60 disabled:opacity-60"
+                onClick={() => setCodeOpen((o) => !o)}
+                aria-expanded={codeOpen}
+                className="flex w-full items-center justify-between rounded-xl px-3 py-3 text-left outline-none focus-visible:ring-1 focus-visible:ring-[#7FFF00]/60"
               >
-                {loading ? "Processing..." : "Pay"}
+                <span className="flex items-center gap-3 text-[13px] font-medium text-white">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#7FFF00]/15">
+                    <Ticket className="h-4 w-4 text-[#7FFF00]" strokeWidth={1.5} />
+                  </span>
+                  Have a discount code?
+                </span>
+                <ChevronDown
+                  className={`h-4 w-4 text-[#7FFF00]/60 transition-transform ${
+                    codeOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              {codeOpen && (
+                <div className="px-3 pb-3">
+                  <div className={`${field} px-4`}>
+                    <input
+                      type="text"
+                      value={code}
+                      onChange={(e) => setCode(e.target.value)}
+                      placeholder="Enter code"
+                      className="w-full bg-transparent py-3 outline-none placeholder:text-white/40"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Presets */}
+            <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {presets.map((p) => (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => pickPreset(p)}
+                  aria-pressed={!custom && amount === String(p)}
+                  className={presetClass(!custom && amount === String(p))}
+                >
+                  {p}
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={pickCustom}
+                aria-pressed={custom}
+                className={presetClass(custom)}
+              >
+                Custom
               </button>
             </div>
 
-            {/* Recent deposits card */}
-            <div className={`${card} overflow-hidden`}>
-              <div className="flex items-center justify-between gap-3 border-b border-[#7FFF00]/15 px-5 py-4">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#7FFF00]/15">
-                    <History className="h-4 w-4 text-[#7FFF00]" strokeWidth={1.5} />
-                  </span>
-                  <h2 className="text-base font-semibold text-white">Recent Deposits</h2>
-                </div>
-                {recent.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setTab("history")}
-                    className="text-xs text-[#7FFF00]/70 underline-offset-4 hover:text-[#7FFF00] hover:underline"
-                  >
-                    View all
-                  </button>
-                )}
+            {/* Amount */}
+            <p className="mb-2 mt-6 text-[13px] font-medium text-white">Amount</p>
+            <div className={`${field} px-4`}>
+              <span className="text-white/40">$</span>
+              <input
+                ref={amountRef}
+                type="number"
+                inputMode="decimal"
+                min={method.min}
+                max={method.max}
+                value={amount}
+                onChange={(e) => {
+                  setAmount(e.target.value);
+                  setCustom(!presets.includes(Number(e.target.value)));
+                }}
+                className="w-full bg-transparent px-2 py-3.5 outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              />
+            </div>
+            <p className="mt-1.5 text-xs text-white/40">
+              Min: ${method.min} - Max: {method.max ? `$${method.max}` : "Unlimited"}
+            </p>
+
+            {/* Summary */}
+            <div className="mt-5 overflow-hidden rounded-xl border border-[#7FFF00]/15">
+              <div className="flex items-center justify-between bg-black/40 px-4 py-3.5 text-[13px]">
+                <span className="text-white/50">Deposit</span>
+                <span className="font-semibold text-white">{money(value)}</span>
               </div>
-
-              {recent.length === 0 ? (
-                <div className="flex h-64 flex-col items-center justify-center gap-4">
-                  <FileSearch className="h-16 w-16 text-white" strokeWidth={1.25} />
-                  <p className="text-[13px] text-white/90">There is no active payment.</p>
+              {percent > 0 && (
+                <div className="flex items-center justify-between border-t border-[#7FFF00]/10 bg-black/40 px-4 py-3 text-[13px]">
+                  <span className="text-white/50">Bonus ({percent}%)</span>
+                  <span className="font-semibold text-[#7FFF00]">+{money(bonus)}</span>
                 </div>
-              ) : (
-                <ul className="min-h-[16rem]">
-                  {recent.map((d) => (
-                    <li
-                      key={d.id}
-                      className="flex items-center justify-between gap-3 border-t border-[#7FFF00]/10 px-5 py-3.5 text-[13px] first:border-t-0"
-                    >
-                      <span className="min-w-0">
-                        <span className="block truncate text-white">{d.method}</span>
-                        <span className="block text-xs text-white/40">
-                          {new Date(d.createdAt).toLocaleDateString()}
-                        </span>
-                      </span>
-                      <span className="flex shrink-0 items-center gap-3">
-                        <span className="font-semibold text-white">{money(d.amount)}</span>
-                        <span
-                          className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${statusStyle[d.status]}`}
-                        >
-                          {statusLabel[d.status]}
-                        </span>
-                      </span>
-                    </li>
-                  ))}
-                </ul>
               )}
-
-              <div className="flex items-center justify-between gap-4 border-t border-[#7FFF00]/15 px-5 py-4">
-                <div>
-                  <p className="text-[15px] font-semibold text-white">Do you need help?</p>
-                  <p className="text-xs text-white/50">We&apos;d be glad to assist you!</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    /* TODO: link to tickets page */
-                  }}
-                  className="flex shrink-0 items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-[13px] font-medium text-black hover:bg-white/90"
-                >
-                  <MessageSquare className="h-4 w-4" strokeWidth={1.5} />
-                  Contact Us
-                </button>
+              <div className="flex items-center justify-between border-t border-[#7FFF00]/15 bg-gradient-to-r from-[#7FFF00]/10 to-[#7FFF00]/[0.03] px-4 py-4">
+                <span className="text-[11px] font-semibold uppercase tracking-widest text-[#7FFF00]/80">
+                  You receive
+                </span>
+                <span className="text-2xl font-bold text-[#7FFF00]">{money(receive)}</span>
               </div>
             </div>
+
+            {error && <p className="mt-3 text-xs text-red-400">{error}</p>}
+
+            <button
+              type="button"
+              onClick={handlePay}
+              disabled={loading || !method.enabled}
+              className="mt-5 w-full rounded-xl bg-[#7FFF00] py-3.5 text-[13px] font-semibold text-black transition-colors hover:bg-[#7FFF00]/85 outline-none focus-visible:ring-2 focus-visible:ring-[#7FFF00]/60 disabled:opacity-60"
+            >
+              {loading ? "Processing..." : "Pay"}
+            </button>
           </div>
         </>
       )}

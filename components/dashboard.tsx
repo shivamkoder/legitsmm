@@ -12,7 +12,6 @@ import {
   CircleDollarSign,
   Dices,
   Users,
-  Store,
   Code,
   Headset,
   LogOut,
@@ -29,7 +28,7 @@ import { AddFunds } from "@/components/addfunds";
 import { Orders } from "@/components/orders";
 import { Services } from "@/components/services";
 import { LuckSpin } from "@/components/luckyspin";
-
+import { Tickets } from "@/components/tickets";
 export type NavItemData = {
   id: string;
   title: string;
@@ -48,7 +47,6 @@ const navItems: NavItemData[] = [
   { id: "add-funds", title: "Add funds", icon: CircleDollarSign },
   { id: "luck-spin", title: "Luck spin", icon: Dices },
   { id: "affiliates", title: "Affiliates", icon: Users },
-  { id: "child-panel", title: "Child panel", icon: Store },
   { id: "api", title: "API", icon: Code },
   { id: "tickets", title: "Tickets", icon: Headset },
 ];
@@ -327,7 +325,8 @@ export default function SidebarNavPreview() {
               <Services onNavigate={handleSelect} />
             ) : activeId === "luck-spin" ? (
               <LuckSpin points={0} />
-            ) : (
+            ) :activeId === "tickets" ? (
+  <Tickets />): (
               <div className="flex h-64 items-center justify-center rounded-xl border border-[#7FFF00]/15 bg-[#050a02] text-sm text-[#7FFF00]/60">
                 {activeTitle} page coming soon
               </div>

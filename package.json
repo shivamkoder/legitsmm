@@ -24,6 +24,8 @@
     "framer-motion": "^11.11.0",
     "motion": "^12.0.0",
     "react-icons": "^5.5.0",
+    "@hugeicons/core-free-icons": "^1.0.0",
+  "motion": "^14.3.0",
     "tailwind-merge": "^3.3.0"
   },
   "devDependencies": {

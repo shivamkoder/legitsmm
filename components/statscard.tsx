@@ -1,5 +1,5 @@
 import React from "react";
-import { Wallet, Receipt, BarChart3, Crown } from "lucide-react";
+import { Wallet, Receipt, BarChart3, Crown, ArrowUpRight } from "lucide-react";
 
 type Stat = {
   id: string;
@@ -57,24 +57,32 @@ export function StatsCard({
   ];
 
   return (
-    <div className="w-full rounded-2xl border border-[#7FFF00]/15 bg-[#050a02] p-5 md:p-6">
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="relative w-full overflow-hidden rounded-3xl border-2 border-[#7FFF00]/40 bg-gradient-to-br from-[#0b1a03] via-[#050a02] to-black p-3 shadow-[0_0_40px_-12px_rgba(127,255,0,0.45)] md:p-4">
+      {/* soft glow behind the tiles */}
+      <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-[#7FFF00]/10 blur-3xl" />
+
+      <div className="relative grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((s) => (
-          <div key={s.id} className="flex items-center gap-4 min-w-0">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#7FFF00]/15 border border-[#7FFF00]/30">
-              <s.icon className="h-5 w-5 text-[#7FFF00]" strokeWidth={1.5} />
+          <div
+            key={s.id}
+            className="group flex items-center gap-4 rounded-2xl border-2 border-[#7FFF00]/20 bg-black/50 p-4 transition-colors hover:border-[#7FFF00]/60"
+          >
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border-2 border-[#7FFF00]/40 bg-[#7FFF00]/15">
+              <s.icon className="h-6 w-6 text-[#7FFF00]" strokeWidth={1.75} />
             </span>
-            <div className="min-w-0">
-              <p className="text-[13px] text-[#7FFF00]/60">{s.label}</p>
-              <p className="truncate text-lg font-semibold text-[#7FFF00]">
+
+            <div className="min-w-0 flex-1">
+              <p className="text-[13px] font-medium text-white/60">{s.label}</p>
+              <p className="truncate text-2xl font-bold leading-tight text-[#7FFF00]">
                 {s.value}
               </p>
               <button
                 type="button"
                 onClick={() => s.linkTarget && onNavigate?.(s.linkTarget)}
-                className="text-xs text-[#7FFF00]/60 underline-offset-4 hover:text-[#7FFF00] hover:underline outline-none focus-visible:ring-1 focus-visible:ring-[#7FFF00]/60 rounded"
+                className="mt-0.5 flex items-center gap-1 rounded text-xs text-white/50 outline-none transition-colors hover:text-[#7FFF00] focus-visible:ring-1 focus-visible:ring-[#7FFF00]/60"
               >
                 {s.linkText}
+                <ArrowUpRight className="h-3 w-3" />
               </button>
             </div>
           </div>

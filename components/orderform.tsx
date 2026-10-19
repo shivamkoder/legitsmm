@@ -12,6 +12,17 @@ import {
 
 type Option = { id: string; label: string };
 
+export type ServiceItem = Option & {
+  rate: number; // price per 1000
+  min: number;
+  max: number;
+  platform: string; // "instagram", "youtube", ...
+  startTime: string; // "0-1Hr"
+  speed: string; // "2-5K/D"
+  refill: string | null; // null = no refill, otherwise e.g. "30 Days"
+  linkHint: string; // "Username", "Post link", ...
+};
+
 // Placeholder data. Replace with real services from Supabase later.
 const categories: Option[] = [
   { id: "ig-followers", label: "Instagram Followers (Own - Working)" },
@@ -19,21 +30,49 @@ const categories: Option[] = [
   { id: "ig-views", label: "Instagram Views" },
 ];
 
-const services: Record<string, (Option & { rate: number; min: number; max: number })[]> = {
+const services: Record<string, ServiceItem[]> = {
   "ig-followers": [
     {
       id: "777",
-      label: "Instagram Followers (App Data, Start Instant, Speed: 1-3K/day, No Refill)",
-      rate: 1.95, // price per 1000
+      label:
+        "Instagram Followers (Best, App Data, Start 0-1Hr, Speed: 2-5K/day, Low Drop, No Refill)",
+      rate: 1.6934,
       min: 100,
       max: 100000,
+      platform: "instagram",
+      startTime: "0-1Hr",
+      speed: "2-5K/D",
+      refill: null,
+      linkHint: "Username",
     },
   ],
   "ig-likes": [
-    { id: "778", label: "Instagram Likes (Instant)", rate: 0.5, min: 50, max: 50000 },
+    {
+      id: "778",
+      label: "Instagram Likes (Instant)",
+      rate: 0.5,
+      min: 50,
+      max: 50000,
+      platform: "instagram",
+      startTime: "Instant",
+      speed: "10K/D",
+      refill: null,
+      linkHint: "Post link",
+    },
   ],
   "ig-views": [
-    { id: "779", label: "Instagram Views (Instant)", rate: 0.1, min: 100, max: 1000000 },
+    {
+      id: "779",
+      label: "Instagram Views (Instant)",
+      rate: 0.1,
+      min: 100,
+      max: 1000000,
+      platform: "instagram",
+      startTime: "Instant",
+      speed: "50K/D",
+      refill: null,
+      linkHint: "Reel link",
+    },
   ],
 };
 
@@ -109,7 +148,11 @@ const Label = ({ children }: { children: React.ReactNode }) => (
   <label className="mb-2 block text-[13px] font-medium text-white">{children}</label>
 );
 
-export function OrderForm() {
+export function OrderForm({
+  onServiceChange,
+}: {
+  onServiceChange?: (s: ServiceItem | null) => void;
+}) {
   const [query, setQuery] = useState("");
   const [categoryId, setCategoryId] = useState(categories[0].id);
   const [serviceId, setServiceId] = useState(services[categories[0].id][0].id);
@@ -119,6 +162,11 @@ export function OrderForm() {
 
   const serviceList = services[categoryId] ?? [];
   const service = serviceList.find((s) => s.id === serviceId) ?? serviceList[0];
+
+  // Tell the parent which service is selected so the details panel can update.
+  useEffect(() => {
+    onServiceChange?.(service ?? null);
+  }, [service, onServiceChange]);
 
   const filteredCategories = query.trim()
     ? categories.filter((c) => c.label.toLowerCase().includes(query.toLowerCase()))
@@ -213,7 +261,8 @@ export function OrderForm() {
             type="text"
             value={link}
             onChange={(e) => setLink(e.target.value)}
-            className="w-full bg-transparent px-4 py-3.5 outline-none"
+            placeholder={service?.linkHint}
+            className="w-full bg-transparent px-4 py-3.5 outline-none placeholder:text-white/30"
           />
         </div>
       </div>

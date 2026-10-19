@@ -7,9 +7,9 @@ export const DrawCircleText = () => {
     <div className="grid place-content-center px-4 py-10 text-yellow-50">
       <h1 className="max-w-2xl text-center text-5xl leading-snug drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
         
-        Scale your{" "}
+        Buy Your{" "}
         <span className="relative">
-          Marketing
+          Real
           <svg
             viewBox="0 0 286 73"
             fill="none"
@@ -28,7 +28,7 @@ export const DrawCircleText = () => {
             />
           </svg>
         </span>{" "}
-        with Simple AI Tools
+        Engagement now
       </h1>
     </div>
   );

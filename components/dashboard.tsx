@@ -29,6 +29,9 @@ import { Orders } from "@/components/orders";
 import { Services } from "@/components/services";
 import { LuckSpin } from "@/components/luckyspin";
 import { Tickets } from "@/components/tickets";
+import { OrderForm, type ServiceItem } from "@/components/orderform";
+import { ServiceDetails } from "@/components/servicedetails";
+
 export type NavItemData = {
   id: string;
   title: string;
@@ -243,6 +246,7 @@ export default function SidebarNavPreview() {
   const [isOpen, setIsOpen] = useState(true);
   const [activeId, setActiveId] = useState("new-order");
   const [platform, setPlatform] = useState("all");
+  const [selectedService, setSelectedService] = useState<ServiceItem | null>(null);
   const router = useRouter();
 
   const activeTitle =

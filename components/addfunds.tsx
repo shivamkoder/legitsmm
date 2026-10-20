@@ -79,6 +79,19 @@ const methods: Method[] = [
   { id: "bkash", label: "bKash", logo: "/payments/bkash.png", icon: Smartphone, instruction: soon, min: 5, enabled: false },
   { id: "nagad", label: "Nagad", logo: "/payments/nagad.png", icon: Smartphone, instruction: soon, min: 5, enabled: false },
   { id: "shopier", label: "Turkish Card Payment - Shopier", logo: "/payments/shopier.png", icon: CreditCard, instruction: soon, min: 5, enabled: false },
+  {
+  id: "upi",
+  label: "UPI (GPay, PhonePe, Paytm)",
+  logo: "/payments/upi.png",
+  icon: Smartphone,
+  instruction: [
+    "👉 Pay instantly using any UPI app: Google Pay, PhonePe, Paytm, BHIM and more.",
+    "👉 Currently we are accepting deposits from ₹100 (minimum).",
+    "👉 It's an automatic deposit system. Funds are added to your account right after successful payment.",
+  ],
+  min: 1,
+  enabled: false, // set to true only after the gateway is integrated
+},
 ];
 
 const presets = [50, 100, 250];

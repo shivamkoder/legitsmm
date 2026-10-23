@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import {
   Bitcoin,
   ChevronDown,
@@ -80,21 +80,19 @@ const methods: Method[] = [
   { id: "nagad", label: "Nagad", logo: "/payments/nagad.png", icon: Smartphone, instruction: soon, min: 5, enabled: false },
   { id: "shopier", label: "Turkish Card Payment - Shopier", logo: "/payments/shopier.png", icon: CreditCard, instruction: soon, min: 5, enabled: false },
   {
-  id: "upi",
-  label: "UPI (GPay, PhonePe, Paytm)",
-  logo: "/payments/upi.png",
-  icon: Smartphone,
-  instruction: [
-    "👉 Pay instantly using any UPI app: Google Pay, PhonePe, Paytm, BHIM and more.",
-    "👉 Currently we are accepting deposits from ₹100 (minimum).",
-    "👉 It's an automatic deposit system. Funds are added to your account right after successful payment.",
-  ],
-  min: 1,
-  enabled: false, // set to true only after the gateway is integrated
-},
+    id: "upi",
+    label: "UPI (GPay, PhonePe, Paytm)",
+    logo: "/payments/upi.png",
+    icon: Smartphone,
+    instruction: [
+      "👉 Pay instantly using any UPI app: Google Pay, PhonePe, Paytm, BHIM and more.",
+      "👉 Currently we are accepting deposits from ₹100 (minimum).",
+      "👉 It's an automatic deposit system. Funds are added to your account right after successful payment.",
+    ],
+    min: 1,
+    enabled: false, // set to true only after the gateway is integrated
+  },
 ];
-
-const presets = [50, 100, 250];
 
 const card = "rounded-2xl border border-[#7FFF00]/15 bg-[#050a02]";
 const field =
@@ -385,12 +383,10 @@ export function AddFunds({ deposits = [] }: { deposits?: Deposit[] }) {
   const [tab, setTab] = useState<Tab>("add");
   const [methodId, setMethodId] = useState(methods[0].id);
   const [amount, setAmount] = useState("");
-  const [custom, setCustom] = useState(false);
   const [codeOpen, setCodeOpen] = useState(false);
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const amountRef = useRef<HTMLInputElement>(null);
 
   const method = methods.find((m) => m.id === methodId) ?? methods[0];
 
@@ -398,19 +394,6 @@ export function AddFunds({ deposits = [] }: { deposits?: Deposit[] }) {
   const percent = bonusPercent(method, value);
   const bonus = (value * percent) / 100;
   const receive = value + bonus;
-
-  const pickPreset = (v: number) => {
-    setCustom(false);
-    setAmount(String(v));
-    setError(null);
-  };
-
-  const pickCustom = () => {
-    setCustom(true);
-    setAmount("");
-    setError(null);
-    amountRef.current?.focus();
-  };
 
   const handlePay = async () => {
     if (!method.enabled) {
@@ -437,13 +420,6 @@ export function AddFunds({ deposits = [] }: { deposits?: Deposit[] }) {
       setLoading(false);
     }
   };
-
-  const presetClass = (active: boolean) =>
-    `rounded-xl border py-3 text-[13px] font-semibold transition-colors outline-none focus-visible:ring-1 focus-visible:ring-[#7FFF00]/60 ${
-      active
-        ? "border-[#7FFF00]/50 bg-[#7FFF00]/10 text-[#7FFF00]"
-        : "border-[#7FFF00]/15 bg-black/60 text-white/80 hover:border-[#7FFF00]/30 hover:text-white"
-    }`;
 
   return (
     <div className="flex flex-col gap-6">
@@ -508,35 +484,11 @@ export function AddFunds({ deposits = [] }: { deposits?: Deposit[] }) {
               )}
             </div>
 
-            {/* Presets */}
-            <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {presets.map((p) => (
-                <button
-                  key={p}
-                  type="button"
-                  onClick={() => pickPreset(p)}
-                  aria-pressed={!custom && amount === String(p)}
-                  className={presetClass(!custom && amount === String(p))}
-                >
-                  {p}
-                </button>
-              ))}
-              <button
-                type="button"
-                onClick={pickCustom}
-                aria-pressed={custom}
-                className={presetClass(custom)}
-              >
-                Custom
-              </button>
-            </div>
-
             {/* Amount */}
             <p className="mb-2 mt-6 text-[13px] font-medium text-white">Amount</p>
             <div className={`${field} px-4`}>
               <span className="text-white/40">$</span>
               <input
-                ref={amountRef}
                 type="number"
                 inputMode="decimal"
                 min={method.min}
@@ -544,7 +496,7 @@ export function AddFunds({ deposits = [] }: { deposits?: Deposit[] }) {
                 value={amount}
                 onChange={(e) => {
                   setAmount(e.target.value);
-                  setCustom(!presets.includes(Number(e.target.value)));
+                  setError(null);
                 }}
                 className="w-full bg-transparent px-2 py-3.5 outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
               />

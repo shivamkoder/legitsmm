@@ -30,6 +30,7 @@ import { LuckSpin } from "@/components/luckyspin";
 import { Tickets } from "@/components/tickets";
 import { OrderForm, type ServiceItem } from "@/components/orderform";
 import { ServiceDetails } from "@/components/servicedetails";
+import { Logo } from "@/components/logo";
 
 export type NavItemData = {
   id: string;

@@ -10,7 +10,7 @@ import TechText from '@/components/headtxt';
 import { DrawCircleText } from "@/components/circletxt"; 
 import { FeatureSteps } from "@/components/steps";
 import { Button } from "@/components/ui/button";
-import { LegalFooter } from 
+import { LegalFooter } from "@/components/legal-footer";
 const features = [
   { 
     step: 'Step 1', 

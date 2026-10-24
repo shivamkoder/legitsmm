@@ -15,6 +15,7 @@ export type LegalSection = {
 };
 
 export const legalLinks = [
+  { href: "/about", label: "About Us" },
   { href: "/terms", label: "Terms of Service" },
   { href: "/privacy", label: "Privacy Policy" },
   { href: "/refund-policy", label: "Refund & Cancellation" },

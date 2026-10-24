@@ -25,6 +25,7 @@ type Method = {
   min: number;
   max?: number; // undefined = unlimited
   bonusTiers?: BonusTier[]; // highest matching tier wins
+  feePercent?: number; // % taken from the deposit as a transaction fee
   enabled: boolean; // false = shown but not integrated yet
 };
 
@@ -43,6 +44,7 @@ const soon = ["This payment method is coming soon."];
 
 // Same order as the reference screenshot.
 // Only set enabled: true once the method is actually integrated on the server.
+// feePercent values below are placeholders. Put in your real numbers.
 const methods: Method[] = [
   {
     id: "cryptomus",
@@ -64,9 +66,9 @@ const methods: Method[] = [
     enabled: true,
   },
   { id: "heleket", label: "Heleket", logo: "/payments/heleket.png", icon: Bitcoin, instruction: soon, min: 5, enabled: false },
-  { id: "tikokart", label: "Credit Card - Debit Card Payment | TikoKart", logo: "/payments/tikokart.png", icon: CreditCard, instruction: soon, min: 5, enabled: false },
-  { id: "wise", label: "Wise", logo: "/payments/wise.png", icon: Landmark, instruction: soon, min: 5, enabled: false },
-  { id: "paypal", label: "PayPal", logo: "/payments/paypal.png", icon: Wallet, instruction: soon, min: 5, enabled: false },
+  { id: "tikokart", label: "Credit Card - Debit Card Payment | TikoKart", logo: "/payments/tikokart.png", icon: CreditCard, instruction: soon, min: 5, feePercent: 4, enabled: false },
+  { id: "wise", label: "Wise", logo: "/payments/wise.png", icon: Landmark, instruction: soon, min: 5, feePercent: 2, enabled: false },
+  { id: "paypal", label: "PayPal", logo: "/payments/paypal.png", icon: Wallet, instruction: soon, min: 5, feePercent: 5, enabled: false },
   { id: "pix", label: "PIX", logo: "/payments/pix.png", icon: Smartphone, instruction: soon, min: 5, enabled: false },
   { id: "revolut", label: "Revolut", logo: "/payments/revolut.png", icon: Landmark, instruction: soon, min: 5, enabled: false },
   { id: "africa-bank", label: "Africa Bank Transfer", logo: "/payments/africa-bank.png", icon: Landmark, instruction: soon, min: 5, enabled: false },
@@ -100,7 +102,7 @@ const field =
 
 const money = (n: number) => `$${n.toFixed(2)}`;
 
-// Display only. The server must recompute the bonus before crediting anything.
+// Display only. The server must recompute the bonus and fee before crediting anything.
 const bonusPercent = (m: Method, amount: number) => {
   if (!m.bonusTiers || amount <= 0) return 0;
   return m.bonusTiers
@@ -108,6 +110,10 @@ const bonusPercent = (m: Method, amount: number) => {
     .reduce((best, t) => (t.over >= best.over ? t : best), { over: -1, percent: 0 })
     .percent;
 };
+
+const feeOf = (m: Method) => m.feePercent ?? 0;
+const topBonus = (m: Method) =>
+  m.bonusTiers?.length ? Math.max(...m.bonusTiers.map((t) => t.percent)) : 0;
 
 const statusStyle: Record<DepositStatus, string> = {
   pending: "bg-yellow-500/15 text-yellow-400",
@@ -123,7 +129,7 @@ const statusLabel: Record<DepositStatus, string> = {
   expired: "Expired",
 };
 
-/* ---------- Method logo + grid ---------- */
+/* ---------- Method logo + rate badge + grid ---------- */
 
 function MethodLogo({ method }: { method: Method }) {
   const [failed, setFailed] = useState(false);
@@ -143,6 +149,38 @@ function MethodLogo({ method }: { method: Method }) {
   return (
     <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#7FFF00]/10">
       <Icon className="h-5 w-5 text-[#7FFF00]" strokeWidth={1.5} />
+    </span>
+  );
+}
+
+// Green = net bonus, red = net transaction fee, grey = neither.
+function RateBadge({ method }: { method: Method }) {
+  const net = topBonus(method) - feeOf(method); // + = bonus, - = fee
+  const tiered = (method.bonusTiers?.length ?? 0) > 1 && feeOf(method) === 0;
+
+  const style =
+    net > 0
+      ? "bg-[#7FFF00]/15 text-[#7FFF00] border-[#7FFF00]/30"
+      : net < 0
+        ? "bg-red-500/15 text-red-400 border-red-500/30"
+        : "bg-white/10 text-white/60 border-white/10";
+
+  const text =
+    net > 0 ? `${tiered ? "Up to " : ""}+${net}%` : net < 0 ? `${net}%` : "0%";
+
+  const title =
+    net > 0
+      ? `${tiered ? "Up to " : ""}${net}% bonus added to your deposit`
+      : net < 0
+        ? `${-net}% is deducted as a transaction fee`
+        : "No bonus or fee";
+
+  return (
+    <span
+      title={title}
+      className={`rounded-full border px-2 py-0.5 text-[11px] font-semibold ${style}`}
+    >
+      {text}
     </span>
   );
 }
@@ -177,12 +215,15 @@ function MethodGrid({
           >
             <span className="flex w-full items-start justify-between">
               <MethodLogo method={m} />
-              <span
-                className={`flex h-5 w-5 items-center justify-center rounded-full border-2 ${
-                  selected ? "border-[#7FFF00]" : "border-white/25"
-                }`}
-              >
-                {selected && <span className="h-2.5 w-2.5 rounded-full bg-[#7FFF00]" />}
+              <span className="flex items-center gap-2">
+                <RateBadge method={m} />
+                <span
+                  className={`flex h-5 w-5 items-center justify-center rounded-full border-2 ${
+                    selected ? "border-[#7FFF00]" : "border-white/25"
+                  }`}
+                >
+                  {selected && <span className="h-2.5 w-2.5 rounded-full bg-[#7FFF00]" />}
+                </span>
               </span>
             </span>
             <span className="mt-3 flex items-center gap-2">
@@ -393,7 +434,9 @@ export function AddFunds({ deposits = [] }: { deposits?: Deposit[] }) {
   const value = Number(amount) || 0;
   const percent = bonusPercent(method, value);
   const bonus = (value * percent) / 100;
-  const receive = value + bonus;
+  const feePct = feeOf(method);
+  const fee = (value * feePct) / 100;
+  const receive = value + bonus - fee;
 
   const handlePay = async () => {
     if (!method.enabled) {
@@ -413,7 +456,7 @@ export function AddFunds({ deposits = [] }: { deposits?: Deposit[] }) {
     try {
       // TODO: POST { method: method.id, amount: value, code: code.trim() || null }
       // to /api/payments/<method>. The server validates the discount code,
-      // recomputes the bonus, creates the invoice, and returns the payment URL.
+      // recomputes the bonus and fee, creates the invoice, and returns the payment URL.
       // Never credit the balance from the browser.
       console.log({ method: method.id, amount: value, code: code.trim() || null });
     } finally {
@@ -515,6 +558,12 @@ export function AddFunds({ deposits = [] }: { deposits?: Deposit[] }) {
                 <div className="flex items-center justify-between border-t border-[#7FFF00]/10 bg-black/40 px-4 py-3 text-[13px]">
                   <span className="text-white/50">Bonus ({percent}%)</span>
                   <span className="font-semibold text-[#7FFF00]">+{money(bonus)}</span>
+                </div>
+              )}
+              {feePct > 0 && (
+                <div className="flex items-center justify-between border-t border-[#7FFF00]/10 bg-black/40 px-4 py-3 text-[13px]">
+                  <span className="text-white/50">Fee ({feePct}%)</span>
+                  <span className="font-semibold text-red-400">-{money(fee)}</span>
                 </div>
               )}
               <div className="flex items-center justify-between border-t border-[#7FFF00]/15 bg-gradient-to-r from-[#7FFF00]/10 to-[#7FFF00]/[0.03] px-4 py-4">

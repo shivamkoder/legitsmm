@@ -47,7 +47,7 @@ export default function Home() {
 
         <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
           <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-    <Logo className="h-9" />
+    <Logo className="h-11" />
 
             <div className="flex items-center gap-4">
               <Link

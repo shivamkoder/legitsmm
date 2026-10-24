@@ -117,7 +117,7 @@ export function SidebarNav({
       className={`flex flex-col w-[260px] h-full bg-black border-r border-[#7FFF00]/15 p-3 font-sans ${className}`}
     >
       <div className="mb-3 px-2.5 py-3">
-        <img src="/legit-logo.png" alt="LegitSMM" className="h-6 w-auto" />
+        <img src="/legit-logo.png" alt="LegitSMM" className="h-8 w-auto" />
         
       </div>
 

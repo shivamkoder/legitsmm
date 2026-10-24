@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Bitcoin,
   ChevronDown,
@@ -13,6 +13,7 @@ import {
   Ticket,
   Wallet,
 } from "lucide-react";
+import SlideCommit from "@/components/paybutton";
 
 type BonusTier = { over: number; percent: number }; // applies when amount > over
 
@@ -427,7 +428,18 @@ export function AddFunds({ deposits = [] }: { deposits?: Deposit[] }) {
   const [codeOpen, setCodeOpen] = useState(false);
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  // SlideCommit needs a pixel width, so measure the container to make it full width.
+  const slideRef = useRef<HTMLDivElement>(null);
+  const [slideWidth, setSlideWidth] = useState(0);
+  useEffect(() => {
+    const el = slideRef.current;
+    if (!el) return;
+    const update = () => setSlideWidth(Math.floor(el.clientWidth));
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [tab]);
 
   const method = methods.find((m) => m.id === methodId) ?? methods[0];
 
@@ -438,30 +450,23 @@ export function AddFunds({ deposits = [] }: { deposits?: Deposit[] }) {
   const fee = (value * feePct) / 100;
   const receive = value + bonus - fee;
 
+  // Called when the slider reaches the end. Throwing makes the slider show
+  // its error state and spring back.
   const handlePay = async () => {
-    if (!method.enabled) {
-      setError(`${method.label} is not available yet.`);
-      return;
-    }
-    if (!value || value < method.min) {
-      setError(`Minimum deposit is $${method.min}`);
-      return;
-    }
-    if (method.max && value > method.max) {
-      setError(`Maximum deposit is $${method.max}`);
-      return;
-    }
+    const fail = (msg: string): never => {
+      setError(msg);
+      throw new Error(msg);
+    };
+    if (!method.enabled) fail(`${method.label} is not available yet.`);
+    if (!value || value < method.min) fail(`Minimum deposit is $${method.min}`);
+    if (method.max && value > method.max) fail(`Maximum deposit is $${method.max}`);
     setError(null);
-    setLoading(true);
-    try {
-      // TODO: POST { method: method.id, amount: value, code: code.trim() || null }
-      // to /api/payments/<method>. The server validates the discount code,
-      // recomputes the bonus and fee, creates the invoice, and returns the payment URL.
-      // Never credit the balance from the browser.
-      console.log({ method: method.id, amount: value, code: code.trim() || null });
-    } finally {
-      setLoading(false);
-    }
+
+    // TODO: POST { method: method.id, amount: value, code: code.trim() || null }
+    // to /api/payments/<method>. The server validates the discount code,
+    // recomputes the bonus and fee, creates the invoice, and returns the payment URL.
+    // Never credit the balance from the browser.
+    console.log({ method: method.id, amount: value, code: code.trim() || null });
   };
 
   return (
@@ -576,14 +581,26 @@ export function AddFunds({ deposits = [] }: { deposits?: Deposit[] }) {
 
             {error && <p className="mt-3 text-xs text-red-400">{error}</p>}
 
-            <button
-              type="button"
-              onClick={handlePay}
-              disabled={loading || !method.enabled}
-              className="mt-5 w-full rounded-xl bg-[#7FFF00] py-3.5 text-[13px] font-semibold text-black transition-colors hover:bg-[#7FFF00]/85 outline-none focus-visible:ring-2 focus-visible:ring-[#7FFF00]/60 disabled:opacity-60"
-            >
-              {loading ? "Processing..." : "Pay"}
-            </button>
+            <div ref={slideRef} className="mt-5 w-full">
+              {slideWidth > 0 ? (
+                <SlideCommit
+                  label="Slide to pay"
+                  doneLabel="Redirecting..."
+                  errorLabel="Payment failed"
+                  onConfirm={handlePay}
+                  width={slideWidth}
+                  height={56}
+                  radius={14}
+                  trackColor="#0a1a02"
+                  handleColor="#7FFF00"
+                  successColor="#7FFF00"
+                  dangerColor="#ef4444"
+                  disabled={!method.enabled}
+                />
+              ) : (
+                <div className="h-14" />
+              )}
+            </div>
           </div>
         </>
       )}

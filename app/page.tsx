@@ -6,7 +6,7 @@ import { DrawCircleText } from "@/components/circletxt";
 import { FeatureSteps } from "@/components/steps";
 import { Button } from "@/components/ui/button";
 import { LegalFooter } from "@/components/legal-footer";
-
+import { Logo } from "@/components/logo";
 const features = [
   {
     step: "Step 1",

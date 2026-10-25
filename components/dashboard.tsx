@@ -28,6 +28,7 @@ import { Tickets } from "@/components/tickets";
 import { OrderForm, type ServiceItem } from "@/components/orderform";
 import { ServiceDetails } from "@/components/servicedetails";
 import { Logo } from "@/components/logo";
+import { Affiliates } from "@/components/affiliates";
 
 export type NavItemData = {
   id: string;
@@ -324,7 +325,10 @@ export default function SidebarNavPreview() {
               <Orders />
             ) : activeId === "services" ? (
               <Services onNavigate={handleSelect} />
-            ) :activeId === "tickets" ? (
+            ) : activeId === "affiliates" ? (
+              <Affiliates />
+            )
+              :activeId === "tickets" ? (
   <Tickets />): (
               <div className="flex h-64 items-center justify-center rounded-xl border border-[#7FFF00]/15 bg-[#050a02] text-sm text-[#7FFF00]/60">
                 {activeTitle} page coming soon

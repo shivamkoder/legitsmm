@@ -9,6 +9,7 @@ import {
   Minus,
   Plus,
 } from "lucide-react";
+import ArrowFillButton from "@/components/goodbutton";
 
 type Option = { id: string; label: string };
 
@@ -187,14 +188,19 @@ export function OrderForm({
     setQuantity(String(Math.min(next, service?.max ?? next)));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const submitOrder = () => {
     // TODO: validate and create the order in Supabase
     console.log({ serviceId, link, quantity: qty, charge });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        submitOrder();
+      }}
+      className="flex flex-col gap-5"
+    >
       {/* Search */}
       <div className={`${fieldBase} gap-2.5 px-4 py-3.5`}>
         <Search className="h-4 w-4 shrink-0 text-white" strokeWidth={2} />
@@ -318,12 +324,22 @@ export function OrderForm({
       </div>
 
       {/* Submit */}
-      <button
-        type="submit"
-        className="w-full rounded-xl bg-[#7FFF00] py-3.5 text-[13px] font-semibold text-black transition-colors hover:bg-[#7FFF00]/85 outline-none focus-visible:ring-2 focus-visible:ring-[#7FFF00]/60"
-      >
-        Submit
-      </button>
+      <ArrowFillButton
+        btnText="Submit"
+        href="#"
+        role="button"
+        onClick={(e) => {
+          e.preventDefault();
+          submitOrder();
+        }}
+        bgColor="#7FFF00"
+        textColor="#000000"
+        fillBgColor="#000000"
+        fillTextColor="#7FFF00"
+        hoverFillBgColor="#000000"
+        hoverFillTextColor="#7FFF00"
+        className="!w-full !h-14 !text-[14px] !font-semibold ![--pad-x:16px] ![--pad-r:12px] ![--icon-circle:40px] ![--icon-right:8px]"
+      />
     </form>
   );
 }

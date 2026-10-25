@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { LegalFooter } from "@/components/legal-footer";
 import { Logo } from "@/components/logo";
 import { ServicesMenu } from "@/components/services-menu";
+import { Affiliates } from "@/components/affiliates";
+
 const features = [
   {
     step: "Step 1",

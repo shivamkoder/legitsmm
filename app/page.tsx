@@ -7,6 +7,7 @@ import { FeatureSteps } from "@/components/steps";
 import { Button } from "@/components/ui/button";
 import { LegalFooter } from "@/components/legal-footer";
 import { Logo } from "@/components/logo";
+import { ServicesMenu } from "@/components/services-menu";
 const features = [
   {
     step: "Step 1",
@@ -50,6 +51,7 @@ export default function Home() {
     <Logo className="h-11" />
 
             <div className="flex items-center gap-4">
+              <ServicesMenu />
               <Link
                 href="/about"
                 className="text-white/80 transition-colors hover:text-[#7FFF00]"

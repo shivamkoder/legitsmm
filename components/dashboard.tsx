@@ -7,10 +7,8 @@ import {
   ListPlus,
   Layers,
   Bell,
-  Handshake,
   ShoppingBag,
   CircleDollarSign,
-  Dices,
   Users,
   Code,
   Headset,
@@ -26,7 +24,6 @@ import { PlatformFilter } from "@/components/platformfilter";
 import { AddFunds } from "@/components/addfunds";
 import { Orders } from "@/components/orders";
 import { Services } from "@/components/services";
-import { LuckSpin } from "@/components/luckyspin";
 import { Tickets } from "@/components/tickets";
 import { OrderForm, type ServiceItem } from "@/components/orderform";
 import { ServiceDetails } from "@/components/servicedetails";
@@ -45,10 +42,8 @@ const navItems: NavItemData[] = [
   { id: "mass-order", title: "Mass order", icon: ListPlus },
   { id: "services", title: "Services", icon: Layers },
   { id: "updates", title: "Updates", icon: Bell },
-  { id: "become-provider", title: "Become a provider", icon: Handshake },
   { id: "orders", title: "Orders", icon: ShoppingBag },
   { id: "add-funds", title: "Add funds", icon: CircleDollarSign },
-  { id: "luck-spin", title: "Luck spin", icon: Dices },
   { id: "affiliates", title: "Affiliates", icon: Users },
   { id: "api", title: "API", icon: Code },
   { id: "tickets", title: "Tickets", icon: Headset },
@@ -329,8 +324,6 @@ export default function SidebarNavPreview() {
               <Orders />
             ) : activeId === "services" ? (
               <Services onNavigate={handleSelect} />
-            ) : activeId === "luck-spin" ? (
-              <LuckSpin points={0} />
             ) :activeId === "tickets" ? (
   <Tickets />): (
               <div className="flex h-64 items-center justify-center rounded-xl border border-[#7FFF00]/15 bg-[#050a02] text-sm text-[#7FFF00]/60">

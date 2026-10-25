@@ -85,7 +85,10 @@ const DropdownMenu = ({ options, children }: DropdownMenuProps) => {
                     },
                   }}
                   key={option.label}
-                  onClick={option.onClick}
+                  onClick={() => {
+  option.onClick();
+  setIsOpen(false);
+}}
                   className="px-2 py-3 cursor-pointer text-white text-sm rounded-lg w-full text-left flex items-center gap-x-2"
                 >
                   {option.Icon}

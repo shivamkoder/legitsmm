@@ -40,7 +40,7 @@ const otherPlatforms: Platform[] = [
   { id: "whatsapp", label: "WhatsApp", icon: SiWhatsapp, color: "#25D366" },
 ];
 
-type Service = {
+export type Service = {
   id: string;
   platform: string;
   name: string;
@@ -50,7 +50,7 @@ type Service = {
 };
 
 // Placeholder data. Replace with real services from Supabase later.
-const allServices: Service[] = [
+export const allServices: Service[] = [
   { id: "777", platform: "instagram", name: "Instagram Followers (Instant, 1-3K/day, No Refill)", rate: 1.95, min: 100, max: 100000 },
   { id: "778", platform: "instagram", name: "Instagram Likes (Instant)", rate: 0.5, min: 50, max: 50000 },
   { id: "779", platform: "instagram", name: "Instagram Views (Instant)", rate: 0.1, min: 100, max: 1000000 },
@@ -66,7 +66,6 @@ const allServices: Service[] = [
 ];
 
 type Sort = "default" | "price-asc" | "price-desc" | "min-asc";
-
 const sortOptions: { id: Sort; label: string }[] = [
   { id: "default", label: "Default" },
   { id: "price-asc", label: "Price: low to high" },

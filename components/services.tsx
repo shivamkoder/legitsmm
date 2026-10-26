@@ -66,7 +66,7 @@ const allServices: Service[] = [
 ];
 
 type Sort = "default" | "price-asc" | "price-desc" | "min-asc";
-export const allServices: Service[] = [
+
 const sortOptions: { id: Sort; label: string }[] = [
   { id: "default", label: "Default" },
   { id: "price-asc", label: "Price: low to high" },

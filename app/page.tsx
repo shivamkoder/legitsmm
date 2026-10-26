@@ -15,19 +15,19 @@ const features = [
     step: "Step 1",
     title: "Select Payment Meathod",
     content: "Select the Payment Meathod you prefer Credits get added to your Dashboard",
-    image: "/public/Payment.png",
+    image: "/public/payment.png",
   },
   {
     step: "Step 2",
     title: "Select The Services ",
     content: "Choose from our wide range of services and across 7+ platforms.",
-    image: "/public/Choosing.png",
+    image: "/public/choosing.png",
   },
   {
     step: "Step 3",
     title: "Order and Sit Back",
     content: "Let us take care of doing the task,We are legit for a reason.",
-    image: "/public/Beach.png",
+    image: "/public/beach.png",
   },
 ];
 

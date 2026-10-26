@@ -15,19 +15,19 @@ const features = [
     step: "Step 1",
     title: "Select Payment Meathod",
     content: "Select the Payment Meathod you prefer Credits get added to your Dashboard",
-    image: "https://cdn.21st.dev/assets/mirror/ba/ba157d049e59513a30a7d4ec04fc9ea8af159f81cc9e54700ed127889b91d967.jpg",
+    image: "/public/Payment.png",
   },
   {
     step: "Step 2",
     title: "Select The Services ",
     content: "Choose from our wide range of services and across 7+ platforms.",
-    image: "https://cdn.21st.dev/assets/mirror/85/85e84077a6db13908b5d28903e8107f131e685fee136869651ae5eccda88a020.jpg",
+    image: "/public/Choosing.png",
   },
   {
     step: "Step 3",
     title: "Order and Sit Back",
     content: "Let us take care of doing the task,We are legit for a reason.",
-    image: "https://cdn.21st.dev/assets/mirror/f6/f6d1e174377ea631cd11224860ab67347e8cc4844ad94d6d2dee6521b8b5dd55.jpg",
+    image: "/public/Beach.png",
   },
 ];
 

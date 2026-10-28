@@ -9,6 +9,7 @@ import { LegalFooter } from "@/components/legal-footer";
 import { Logo } from "@/components/logo";
 import { ServicesMenu } from "@/components/services-menu";
 import { Affiliates } from "@/components/affiliates";
+import { ImageComparison } from "@/components/comparison";
 
 const features = [
   {
@@ -114,6 +115,23 @@ export default function Home() {
           </Suspense>
         </div>
       </section>
+      {/* BEFORE / AFTER */}
+<section className="w-full bg-black text-white px-5 py-16 md:py-24">
+  <div className="max-w-5xl mx-auto">
+    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center text-[#7FFF00]">
+      See the difference
+    </h2>
+    <p className="mt-3 mb-10 text-center text-white/60 text-sm md:text-base">
+      Drag the slider to compare an account before and after Legit SMM.
+    </p>
+    <ImageComparison
+      beforeImage="/compare/before.png"
+      afterImage="/compare/after.png"
+      altBefore="Profile before Legit SMM"
+      altAfter="Profile after Legit SMM"
+    />
+  </div>
+</section>
 
       <LegalFooter />
     </main>

@@ -51,18 +51,18 @@ export type Service = {
 
 // Placeholder data. Replace with real services from Supabase later.
 export const allServices: Service[] = [
-  { id: "777", platform: "instagram", name: "Instagram Followers (Instant, 1-3K/day, No Refill)", rate: 1.95, min: 100, max: 100000 },
-  { id: "778", platform: "instagram", name: "Instagram Likes (Instant)", rate: 0.5, min: 50, max: 50000 },
-  { id: "779", platform: "instagram", name: "Instagram Views (Instant)", rate: 0.1, min: 100, max: 1000000 },
-  { id: "801", platform: "youtube", name: "YouTube Views (Non-Drop)", rate: 2.4, min: 500, max: 500000 },
-  { id: "802", platform: "youtube", name: "YouTube Subscribers", rate: 14.0, min: 50, max: 20000 },
-  { id: "821", platform: "tiktok", name: "TikTok Likes (Instant)", rate: 0.8, min: 50, max: 100000 },
-  { id: "822", platform: "tiktok", name: "TikTok Followers", rate: 3.2, min: 100, max: 50000 },
-  { id: "841", platform: "telegram", name: "Telegram Channel Members", rate: 1.2, min: 100, max: 100000 },
-  { id: "861", platform: "x", name: "X Followers", rate: 6.5, min: 100, max: 20000 },
-  { id: "881", platform: "facebook", name: "Facebook Page Likes", rate: 3.9, min: 100, max: 50000 },
-  { id: "901", platform: "spotify", name: "Spotify Plays", rate: 1.1, min: 1000, max: 1000000 },
-  { id: "921", platform: "twitch", name: "Twitch Followers", rate: 5.0, min: 50, max: 10000 },
+  { id: "101", platform: "instagram", name: "Instagram Followers (Instant, 1-3K/day, No Refill)", rate: 1.95, min: 100, max: 100000 },
+  { id: "102", platform: "instagram", name: "Instagram Likes (Instant)", rate: 0.5, min: 50, max: 50000 },
+  { id: "103", platform: "instagram", name: "Instagram Views (Instant)", rate: 0.1, min: 100, max: 1000000 },
+  { id: "104", platform: "youtube", name: "YouTube Views (Non-Drop)", rate: 2.4, min: 500, max: 500000 },
+  { id: "105", platform: "youtube", name: "YouTube Subscribers", rate: 14.0, min: 50, max: 20000 },
+  { id: "106", platform: "tiktok", name: "TikTok Likes (Instant)", rate: 0.8, min: 50, max: 100000 },
+  { id: "107", platform: "tiktok", name: "TikTok Followers", rate: 3.2, min: 100, max: 50000 },
+  { id: "108", platform: "telegram", name: "Telegram Channel Members", rate: 1.2, min: 100, max: 100000 },
+  { id: "109", platform: "x", name: "X Followers", rate: 6.5, min: 100, max: 20000 },
+  { id: "110", platform: "facebook", name: "Facebook Page Likes", rate: 3.9, min: 100, max: 50000 },
+  { id: "111", platform: "spotify", name: "Spotify Plays", rate: 1.1, min: 1000, max: 1000000 },
+  { id: "112", platform: "twitch", name: "Twitch Followers", rate: 5.0, min: 50, max: 10000 },
 ];
 
 type Sort = "default" | "price-asc" | "price-desc" | "min-asc";

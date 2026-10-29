@@ -28,7 +28,7 @@ const features = [
     step: "Step 3",
     title: "Order and Sit Back",
     content: "Let us take care of doing the task,We are legit for a reason.",
-    image: "/steps/relax.png",
+    image: "/steps/beach.png",
   },
 ];
 

@@ -68,16 +68,16 @@ export function SignUpPage() {
   };
 
   return (
-    <section className="min-h-screen bg-white p-3 text-black antialiased [font-synthesis:none] dark:bg-[#050505] dark:text-white">
-      <div className="grid min-h-[calc(100vh-1.5rem)] gap-6 lg:grid-cols-[0.94fr_1.06fr]">
+    <section className="min-h-dvh bg-white p-3 text-black antialiased [font-synthesis:none] dark:bg-[#050505] dark:text-white lg:h-dvh lg:overflow-hidden">
+      <div className="grid gap-4 lg:h-full lg:grid-cols-[0.94fr_1.06fr]">
         {/* Form side */}
-        <div className="flex min-h-[760px] items-start rounded-md border border-black/20 bg-white px-6 py-12 sm:px-10 dark:border-white/10 dark:bg-[#0a0a0a] lg:min-h-0 lg:px-14 lg:py-28 xl:px-20">
-          <div className="mx-auto w-full max-w-[590px]">
+        <div className="flex min-h-0 items-center rounded-md border border-black/20 bg-white px-6 py-10 sm:px-10 dark:border-white/10 dark:bg-[#0a0a0a] lg:overflow-y-auto lg:px-14 lg:py-6 xl:px-20">
+          <div className="mx-auto w-full max-w-[560px]">
             <div>
-              <h1 className="whitespace-nowrap text-3xl font-medium tracking-[-0.04em] sm:text-4xl lg:text-[42px] lg:leading-[1.05] xl:text-[50px]">
+              <h1 className="whitespace-nowrap text-3xl font-medium tracking-[-0.04em] sm:text-4xl lg:text-[38px] lg:leading-[1.05] xl:text-[44px]">
                 Create an account
               </h1>
-              <p className="mt-3 text-lg leading-snug text-black/60 dark:text-white/55 sm:text-xl lg:text-2xl">
+              <p className="mt-2 text-base leading-snug text-black/60 dark:text-white/55 sm:text-lg lg:text-xl">
                 Already have an account?{" "}
                 <Link
                   href="/auth/login"
@@ -88,7 +88,7 @@ export function SignUpPage() {
               </p>
             </div>
 
-            <div className="mt-12">
+            <div className="mt-7">
               <SocialButton
                 icon={<GoogleIcon />}
                 label="Sign up with Google"
@@ -96,12 +96,12 @@ export function SignUpPage() {
               />
             </div>
 
-            <div className="my-10 text-center text-xl font-medium text-black/60 dark:text-white/50">
+            <div className="my-5 text-center text-base font-medium text-black/60 dark:text-white/50">
               or
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="grid gap-5 sm:grid-cols-2">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <FieldBox
                   label="First Name"
                   name="firstName"
@@ -140,7 +140,7 @@ export function SignUpPage() {
                 minLength={6}
               />
 
-              <div className="space-y-4 pt-2 text-sm leading-5 text-black/30 dark:text-white/35 sm:text-[15px]">
+              <div className="space-y-3 pt-1 text-sm leading-5 text-black/30 dark:text-white/35">
                 <CheckboxLine checked={noEmails} onChange={setNoEmails}>
                   I don&apos;t want to receive emails about Legit SMM updates
                 </CheckboxLine>
@@ -167,7 +167,7 @@ export function SignUpPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="mt-9 flex h-12 w-full items-center justify-center rounded-[10px] border border-black/40 bg-black text-xl font-medium text-white transition-colors hover:bg-black/85 disabled:opacity-60 dark:border-white/40 dark:bg-white dark:text-black dark:hover:bg-white/85"
+                className="mt-2 flex h-12 w-full items-center justify-center rounded-[10px] border border-black/40 bg-black text-lg font-medium text-white transition-colors hover:bg-black/85 disabled:opacity-60 dark:border-white/40 dark:bg-white dark:text-black dark:hover:bg-white/85"
               >
                 {isLoading ? "Creating account..." : "Sign up"}
               </button>
@@ -176,7 +176,7 @@ export function SignUpPage() {
         </div>
 
         {/* Gradient side */}
-        <div className="relative flex min-h-[720px] overflow-hidden rounded-md bg-black p-8 text-white sm:p-12 lg:min-h-0">
+        <div className="relative flex min-h-[280px] overflow-hidden rounded-md bg-black p-8 text-white sm:p-10 lg:min-h-0">
           <GrainGradient
             speed={1}
             scale={1}
@@ -193,8 +193,8 @@ export function SignUpPage() {
             className="absolute inset-0 bg-black"
           />
 
-          <div className="relative z-10 flex h-full w-full flex-col justify-between">
-            <h2 className="max-w-[620px] pt-0 text-5xl font-medium tracking-[-0.05em] text-white sm:text-6xl lg:pt-16 lg:text-[64px] lg:leading-[0.98] xl:text-[70px]">
+          <div className="relative z-10 flex h-full w-full flex-col justify-between gap-8">
+            <h2 className="max-w-[620px] text-4xl font-medium tracking-[-0.05em] text-white sm:text-5xl lg:pt-6 lg:text-[56px] lg:leading-[0.98] xl:text-[64px]">
               Scale fast,
               <br />
               Grow faster
@@ -202,9 +202,9 @@ export function SignUpPage() {
 
             <Link
               href="/"
-              className="mb-0 inline-flex h-12 max-w-full items-center gap-3 self-start rounded-[10px] border border-white/25 px-5 text-base font-medium text-white/85 backdrop-blur-sm transition-colors hover:border-white/45 hover:text-white xl:mb-32 xl:px-6 xl:text-2xl"
+              className="inline-flex h-11 max-w-full items-center gap-3 self-start rounded-[10px] border border-white/25 px-5 text-base font-medium text-white/85 backdrop-blur-sm transition-colors hover:border-white/45 hover:text-white"
             >
-              <ArrowLeft className="size-5 shrink-0 xl:size-6" />
+              <ArrowLeft className="size-5 shrink-0" />
               <span className="truncate whitespace-nowrap">Back to home</span>
             </Link>
           </div>
@@ -227,7 +227,7 @@ function SocialButton({
     <button
       type="button"
       onClick={onClick}
-      className="flex h-10 w-full items-center justify-center gap-2 rounded-[10px] border border-black/25 bg-white px-3 text-sm leading-none text-black transition-colors hover:bg-black/[0.03] dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 xl:text-[19px]"
+      className="flex h-11 w-full items-center justify-center gap-2 rounded-[10px] border border-black/25 bg-white px-3 text-base leading-none text-black transition-colors hover:bg-black/[0.03] dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
     >
       <span className="shrink-0">{icon}</span>
       <span className="whitespace-nowrap">{label}</span>
@@ -260,7 +260,7 @@ function FieldBox({
   const showLabel = !focused && !value;
 
   return (
-    <label className="flex h-14 items-center justify-between gap-4 rounded-[10px] border border-black/25 bg-white px-5 text-lg leading-none focus-within:border-black/60 dark:border-white/15 dark:bg-white/5 dark:focus-within:border-white/50 xl:text-xl">
+    <label className="flex h-12 items-center justify-between gap-4 rounded-[10px] border border-black/25 bg-white px-5 text-base leading-none focus-within:border-black/60 dark:border-white/15 dark:bg-white/5 dark:focus-within:border-white/50">
       <input
         name={name}
         type={type}

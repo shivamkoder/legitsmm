@@ -1,169 +1,166 @@
-import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { Redis } from '@upstash/redis';
+import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import {
+  addOrder,
+  getSupplier,
+  SupplierError,
+} from "@/lib/suppliers/client";
 
-// Initialize Supabase client
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+export const maxDuration = 60;
 
-// Initialize Upstash Redis client
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL!,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-});
+type Candidate = { supplier_id: number; supplier_service_id: string };
+type PlaceOrderResult = {
+  order_id: number;
+  charge: number;
+  candidates: Candidate[];
+};
+
+// Errors raised by the place_order SQL function -> HTTP responses.
+const RPC_ERRORS: Record<string, { status: number; message: string }> = {
+  service_not_found: { status: 404, message: "Service not found or inactive." },
+  quantity_out_of_range: { status: 400, message: "Quantity is outside the allowed range." },
+  insufficient_balance: { status: 402, message: "Insufficient balance." },
+  no_supplier_available: { status: 503, message: "This service is temporarily unavailable." },
+};
+
+const errMsg = (e: unknown) => (e instanceof Error ? e.message : String(e));
 
 export async function POST(request: Request) {
+  // 1. Identify the user from the session. Never from the request body.
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getClaims();
+  const userId = auth?.claims?.sub;
+  if (!userId) {
+    return NextResponse.json({ error: "Not authenticated." }, { status: 401 });
+  }
+
+  // 2. Parse and validate input.
+  let body: Record<string, unknown>;
   try {
-    const body = await request.json();
-    const { userId, serviceId, link, quantity } = body;
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
+  }
 
-    if (!userId || !serviceId || !link || !quantity) {
-      return NextResponse.json(
-        { error: 'Missing required order parameters.' },
-        { status: 400 }
-      );
+  const serviceId = body.serviceId;
+  const link = typeof body.link === "string" ? body.link.trim() : "";
+  const extra =
+    body.extra && typeof body.extra === "object" && !Array.isArray(body.extra)
+      ? (body.extra as Record<string, unknown>)
+      : {};
+
+  if (typeof serviceId !== "string" && typeof serviceId !== "number") {
+    return NextResponse.json({ error: "Missing service." }, { status: 400 });
+  }
+  if (!link || link.length > 500) {
+    return NextResponse.json({ error: "Invalid link." }, { status: 400 });
+  }
+
+  // Custom-comment services: quantity is the number of comment lines.
+  let quantity = Number(body.quantity);
+  if (typeof extra.comments === "string" && extra.comments.trim()) {
+    quantity = extra.comments.split("\n").filter((l) => l.trim()).length;
+  }
+  if (!Number.isInteger(quantity) || quantity <= 0) {
+    return NextResponse.json({ error: "Invalid quantity." }, { status: 400 });
+  }
+
+  const admin = createAdminClient();
+
+  // 3. Atomically: lock the user's row, check the balance, deduct it, write the
+  //    ledger entry and create the order as 'pending'. Price, min/max and the
+  //    supplier list are all computed in the database, never from the client.
+  const { data, error } = await admin.rpc("place_order", {
+    p_user: userId,
+    p_service: String(serviceId),
+    p_link: link,
+    p_quantity: quantity,
+    p_extra: extra,
+  });
+
+  if (error) {
+    const known = Object.entries(RPC_ERRORS).find(([key]) => error.message.includes(key));
+    if (known) {
+      return NextResponse.json({ error: known[1].message }, { status: known[1].status });
     }
+    console.error("[orders] place_order failed:", error.message);
+    return NextResponse.json({ error: "Could not place order." }, { status: 500 });
+  }
 
-    // 1. ATOMIC LOCK & BALANCE CHECK (Using Upstash Redis to prevent double-spending)
-    const lockKey = `lock:user:${userId}`;
-    const acquiredLock = await redis.set(lockKey, 'locked', {
-      nx: true,
-      ex: 5, // Lock expires automatically after 5 seconds
-    });
+  const placed = data as PlaceOrderResult;
 
-    if (!acquiredLock) {
-      return NextResponse.json(
-        { error: 'Another transaction is in progress. Please try again.' },
-        { status: 429 }
-      );
-    }
-
+  // 4. Dispatch to suppliers, cheapest first.
+  //    not_sent / rejected -> safe to try the next supplier.
+  //    unknown             -> the supplier MAY have the order, so stop here.
+  let lastError = "no supplier";
+  for (const c of placed.candidates) {
     try {
-      // Fetch service details and pricing from Supabase
-      const { data: service, error: serviceError } = await supabase
-        .from('services')
-        .select('*')
-        .eq('id', serviceId)
-        .eq('is_active', true)
-        .single();
-
-      if (serviceError || !service) {
-        return NextResponse.json({ error: 'Service not found or inactive.' }, { status: 404 });
-      }
-
-      // Validate quantity limits
-      if (quantity < service.min || quantity > service.max) {
-        return NextResponse.json(
-          { error: `Quantity must be between ${service.min} and ${service.max}.` },
-          { status: 400 }
-        );
-      }
-
-      // Calculate total charge: (rate per 1,000 * quantity) / 1000
-      const totalCharge = Number(((service.rate * quantity) / 1000).toFixed(4));
-
-      // Fetch user's current wallet balance
-      const { data: user, error: userError } = await supabase
-        .from('users')
-        .select('balance')
-        .eq('id', userId)
-        .single();
-
-      if (userError || !user) {
-        return NextResponse.json({ error: 'User not found.' }, { status: 404 });
-      }
-
-      if (user.balance < totalCharge) {
-        return NextResponse.json({ error: 'Insufficient wallet balance.' }, { status: 400 });
-      }
-
-      // 2. DISPATCH TO UPSTREAM PROVIDER (MoreThanPanel / NiceSMM)
-      // Determine API URL and Key based on service.provider_name
-      const providerApiUrl =
-        service.provider_name === 'morethanpanel'
-          ? process.env.MORETHANPANEL_API_URL!
-          : process.env.NICESMM_API_URL!;
-          
-      const providerApiKey =
-        service.provider_name === 'morethanpanel'
-          ? process.env.MORETHANPANEL_API_KEY!
-          : process.env.NICESMM_API_KEY!;
-
-      const params = new URLSearchParams({
-        key: providerApiKey,
-        action: 'add',
-        service: service.upstream_service_id.toString(),
-        link: link,
-        quantity: quantity.toString(),
+      const supplier = await getSupplier(c.supplier_id);
+      const supplierOrderId = await addOrder(supplier, {
+        serviceId: c.supplier_service_id,
+        link,
+        quantity,
+        extra,
       });
 
-      const upstreamResponse = await fetch(providerApiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: params.toString(),
-      });
+      const { error: updError } = await admin
+        .from("orders")
+        .update({ supplier_id: c.supplier_id, supplier_order_id: supplierOrderId })
+        .eq("id", placed.order_id);
 
-      const upstreamData = await upstreamResponse.json();
-
-      if (upstreamData.error) {
-        return NextResponse.json(
-          { error: `Upstream Provider Error: ${upstreamData.error}` },
-          { status: 502 }
+      if (updError) {
+        // The supplier has the order but we failed to record its id. Needs a human.
+        console.error(
+          `[orders] CRITICAL order ${placed.order_id} accepted by supplier ${c.supplier_id} ` +
+            `as #${supplierOrderId} but DB update failed: ${updError.message}`,
         );
-      }
-
-      const upstreamOrderId = upstreamData.order;
-
-      // 3. DATABASE UPDATES (Deduct Balance & Insert Order)
-      const newBalance = Number((user.balance - totalCharge).toFixed(4));
-
-      // Update user balance
-      const { error: balanceUpdateError } = await supabase
-        .from('users')
-        .update({ balance: newBalance })
-        .eq('id', userId);
-
-      if (balanceUpdateError) {
-        throw new Error('Failed to update user balance in database.');
-      }
-
-      // Insert order record into Supabase
-      const { data: orderData, error: orderInsertError } = await supabase
-        .from('orders')
-        .insert({
-          user_id: userId,
-          service_id: serviceId,
-          upstream_order_id: upstreamOrderId,
-          link: link,
-          quantity: quantity,
-          charge: totalCharge,
-          status: 'Pending',
-        })
-        .select()
-        .single();
-
-      if (orderInsertError) {
-        throw new Error('Failed to save order record.');
       }
 
       return NextResponse.json({
         success: true,
-        message: 'Order placed successfully!',
-        order: orderData,
+        orderId: placed.order_id,
+        charge: placed.charge,
       });
+    } catch (e) {
+      lastError = errMsg(e);
 
-    } finally {
-      // Release the Redis atomic lock
-      await redis.del(lockKey);
+      if (e instanceof SupplierError && e.kind === "unknown") {
+        // Do not reroute and do not refund: it may have been accepted.
+        await admin
+          .from("orders")
+          .update({ supplier_id: c.supplier_id, error: `unconfirmed: ${lastError}` })
+          .eq("id", placed.order_id);
+        console.error(`[orders] order ${placed.order_id} unconfirmed at supplier ${c.supplier_id}:`, lastError);
+        return NextResponse.json(
+          {
+            success: true,
+            orderId: placed.order_id,
+            charge: placed.charge,
+            warning: "Your order is being confirmed with our provider.",
+          },
+          { status: 202 },
+        );
+      }
+
+      console.warn(`[orders] supplier ${c.supplier_id} failed (${lastError}), trying next`);
     }
-
-  } catch (err: any) {
-    console.error('Order placement error:', err);
-    return NextResponse.json(
-      { error: err.message || 'Internal server error.' },
-      { status: 500 }
-    );
   }
+
+  // 5. Every supplier refused or was unreachable before sending: cancel and refund.
+  const { error: refundError } = await admin.rpc("finalize_order", {
+    p_order: placed.order_id,
+    p_status: "canceled",
+    p_start_count: null,
+    p_remains: null,
+    p_error: lastError,
+  });
+  if (refundError) {
+    console.error(`[orders] CRITICAL refund failed for order ${placed.order_id}:`, refundError.message);
+  }
+
+  return NextResponse.json(
+    { error: "We couldn't place this order right now. You have not been charged." },
+    { status: 502 },
+  );
 }

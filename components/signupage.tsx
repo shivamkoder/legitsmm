@@ -58,6 +58,10 @@ export function SignUpPage() {
   };
 
   const handleGoogle = async () => {
+    if (!agreed) {
+  setError("Please accept the Terms and Privacy Policy to continue.");
+  return;
+}
     setError(null);
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({

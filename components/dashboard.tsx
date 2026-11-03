@@ -312,11 +312,8 @@ export default function SidebarNavPreview() {
 
                 <div className="w-full rounded-xl border border-[#7FFF00]/15 bg-[#050a02] p-5 md:p-6">
                   <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                    <OrderForm />
-                    {/* Step 4: service details panel goes here */}
-                        <ServiceDetails service={selectedService} />
-
-                    <div />
+                    <OrderForm onServiceChange={setSelectedService} />
+<ServiceDetails service={selectedService} />
                   </div>
                 </div>
               </>

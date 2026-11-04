@@ -17,6 +17,13 @@ import {
   SiReddit,
   SiWhatsapp,
 } from "react-icons/si";
+import { useServices } from "@/lib/services";
+
+export function Services({ onNavigate }) {
+  const { services, loading, error } = useServices();
+  // ...in useMemo, replace allServices with services, s.min -> s.min_qty, s.max -> s.max_qty
+  // ...render a "Loading..." row while loading, and show `error` if set
+}
 
 type Platform = { id: string; label: string; icon: React.ElementType; color: string };
 

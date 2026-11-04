@@ -19,12 +19,6 @@ import {
 } from "react-icons/si";
 import { useServices } from "@/lib/services";
 
-export function Services({ onNavigate }) {
-  const { services, loading, error } = useServices();
-  // ...in useMemo, replace allServices with services, s.min -> s.min_qty, s.max -> s.max_qty
-  // ...render a "Loading..." row while loading, and show `error` if set
-}
-
 type Platform = { id: string; label: string; icon: React.ElementType; color: string };
 
 // Same order as the reference screenshot
@@ -55,22 +49,6 @@ export type Service = {
   min: number;
   max: number;
 };
-
-// Placeholder data. Replace with real services from Supabase later.
-export const allServices: Service[] = [
-  { id: "101", platform: "instagram", name: "Instagram Followers (Instant, 1-3K/day, No Refill)", rate: 1.95, min: 100, max: 100000 },
-  { id: "102", platform: "instagram", name: "Instagram Likes (Instant)", rate: 0.5, min: 50, max: 50000 },
-  { id: "103", platform: "instagram", name: "Instagram Views (Instant)", rate: 0.1, min: 100, max: 1000000 },
-  { id: "104", platform: "youtube", name: "YouTube Views (Non-Drop)", rate: 2.4, min: 500, max: 500000 },
-  { id: "105", platform: "youtube", name: "YouTube Subscribers", rate: 14.0, min: 50, max: 20000 },
-  { id: "106", platform: "tiktok", name: "TikTok Likes (Instant)", rate: 0.8, min: 50, max: 100000 },
-  { id: "107", platform: "tiktok", name: "TikTok Followers", rate: 3.2, min: 100, max: 50000 },
-  { id: "108", platform: "telegram", name: "Telegram Channel Members", rate: 1.2, min: 100, max: 100000 },
-  { id: "109", platform: "x", name: "X Followers", rate: 6.5, min: 100, max: 20000 },
-  { id: "110", platform: "facebook", name: "Facebook Page Likes", rate: 3.9, min: 100, max: 50000 },
-  { id: "111", platform: "spotify", name: "Spotify Plays", rate: 1.1, min: 1000, max: 1000000 },
-  { id: "112", platform: "twitch", name: "Twitch Followers", rate: 5.0, min: 50, max: 10000 },
-];
 
 type Sort = "default" | "price-asc" | "price-desc" | "min-asc";
 const sortOptions: { id: Sort; label: string }[] = [
@@ -190,13 +168,27 @@ const cols =
   "grid grid-cols-[70px_minmax(220px,4fr)_110px_110px_110px_100px] items-center gap-4 px-5";
 
 export function Services({ onNavigate }: { onNavigate?: (id: string) => void }) {
+  const { services, loading, error } = useServices();
   const [platform, setPlatform] = useState("all");
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<Sort>("default");
 
+  const all: Service[] = useMemo(
+    () =>
+      services.map((s) => ({
+        id: String(s.id),
+        platform: s.platform,
+        name: s.name,
+        rate: s.rate,
+        min: s.min_qty,
+        max: s.max_qty,
+      })),
+    [services],
+  );
+
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const list = allServices.filter(
+    const list = all.filter(
       (s) =>
         (platform === "all" || s.platform === platform) &&
         (!q || s.name.toLowerCase().includes(q) || s.id.includes(q)),
@@ -205,7 +197,7 @@ export function Services({ onNavigate }: { onNavigate?: (id: string) => void }) 
     if (sort === "price-desc") list.sort((a, b) => b.rate - a.rate);
     if (sort === "min-asc") list.sort((a, b) => a.min - b.min);
     return list;
-  }, [platform, query, sort]);
+  }, [all, platform, query, sort]);
 
   return (
     <div className="flex flex-col gap-5">
@@ -267,7 +259,15 @@ export function Services({ onNavigate }: { onNavigate?: (id: string) => void }) 
               <span />
             </div>
 
-            {visible.length === 0 ? (
+            {loading ? (
+              <div className="flex h-64 items-center justify-center text-[13px] text-white/60">
+                Loading services...
+              </div>
+            ) : error ? (
+              <div className="flex h-64 items-center justify-center text-[13px] text-red-400">
+                Could not load services: {error}
+              </div>
+            ) : visible.length === 0 ? (
               <div className="flex h-64 flex-col items-center justify-center gap-2">
                 <h3 className="text-xl font-semibold text-white">No services found</h3>
                 <p className="text-[13px] text-white/60">Try a different platform or search.</p>

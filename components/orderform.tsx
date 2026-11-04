@@ -25,57 +25,17 @@ export type ServiceItem = Option & {
 };
 
 // Placeholder data. Replace with real services from Supabase later.
-const categories: Option[] = [
-  { id: "ig-followers", label: "Instagram Followers (Own - Working)" },
-  { id: "ig-likes", label: "Instagram Likes" },
-  { id: "ig-views", label: "Instagram Views" },
-];
+const { services } = useServices();
 
-const services: Record<string, ServiceItem[]> = {
-  "ig-followers": [
-    {
-      id: "777",
-      label:
-        "Instagram Followers (Best, App Data, Start 0-1Hr, Speed: 2-5K/day, Low Drop, No Refill)",
-      rate: 1.6934,
-      min: 100,
-      max: 100000,
-      platform: "instagram",
-      startTime: "0-1Hr",
-      speed: "2-5K/D",
-      refill: null,
-      linkHint: "Username",
-    },
-  ],
-  "ig-likes": [
-    {
-      id: "778",
-      label: "Instagram Likes (Instant)",
-      rate: 0.5,
-      min: 50,
-      max: 50000,
-      platform: "instagram",
-      startTime: "Instant",
-      speed: "10K/D",
-      refill: null,
-      linkHint: "Post link",
-    },
-  ],
-  "ig-views": [
-    {
-      id: "779",
-      label: "Instagram Views (Instant)",
-      rate: 0.1,
-      min: 100,
-      max: 1000000,
-      platform: "instagram",
-      startTime: "Instant",
-      speed: "50K/D",
-      refill: null,
-      linkHint: "Reel link",
-    },
-  ],
-};
+const categories = useMemo(
+  () => [...new Set(services.map((s) => s.category))].map((c) => ({ id: c, label: c })),
+  [services],
+);
+const serviceList = services
+  .filter((s) => s.category === categoryId)
+  .map((s) => ({ id: String(s.id), label: s.name, rate: s.rate, min: s.min_qty, max: s.max_qty,
+                 platform: s.platform, refill: s.refill ? "Yes" : null,
+                 startTime: "-", speed: "-", linkHint: "Link" }));
 
 const fieldBase =
   "flex w-full items-center rounded-xl border border-[#7FFF00]/15 bg-black/40 text-[13px] text-white/90 transition-colors focus-within:border-[#7FFF00]/40";

@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from "react";
 import { Layers, CheckCircle2, AlertCircle } from "lucide-react";
 import ArrowFillButton from "@/components/goodbutton";
-import { allServices } from "@/components/services";
+import { useServices, type DbService } from "@/lib/services";
 
 const card = "rounded-2xl border border-[#7FFF00]/15 bg-[#050a02]";
 const MAX_LINES = 100;
@@ -20,21 +20,21 @@ type Row = {
 };
 
 // Format per line:  service_id | quantity | link
-function parse(text: string): Row[] {
+function parse(text: string, services: DbService[]): Row[] {
   const rows: Row[] = [];
   text.split("\n").forEach((raw, i) => {
     if (!raw.trim()) return;
     const [id = "", qtyStr = "", ...rest] = raw.split("|").map((p) => p.trim());
     const link = rest.join("|").trim();
     const qty = Number(qtyStr);
-    const service = allServices.find((s) => s.id === id);
+    const service = services.find((s) => String(s.id) === id);
 
     let error: string | undefined;
     if (!id || !qtyStr || !link) error = "Use: service_id | quantity | link";
     else if (!service) error = `Service ${id} not found`;
     else if (!Number.isInteger(qty) || qty <= 0) error = "Quantity must be a whole number";
-    else if (qty < service.min) error = `Min is ${service.min.toLocaleString()}`;
-    else if (qty > service.max) error = `Max is ${service.max.toLocaleString()}`;
+    else if (qty < service.min_qty) error = `Min is ${service.min_qty.toLocaleString()}`;
+    else if (qty > service.max_qty) error = `Max is ${service.max_qty.toLocaleString()}`;
 
     rows.push({
       line: i + 1,
@@ -51,15 +51,17 @@ function parse(text: string): Row[] {
 }
 
 export function MassOrder() {
+  const { services, loading: loadingServices, error: servicesError } = useServices();
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
-  const rows = useMemo(() => parse(text), [text]);
+  const rows = useMemo(() => parse(text, services), [text, services]);
   const errors = rows.filter((r) => r.error).length;
   const total = rows.reduce((sum, r) => sum + r.charge, 0);
   const tooMany = rows.length > MAX_LINES;
-  const canSubmit = rows.length > 0 && errors === 0 && !tooMany && !loading;
+  const canSubmit =
+    rows.length > 0 && errors === 0 && !tooMany && !loading && !loadingServices;
 
   const submit = async () => {
     if (!canSubmit) return;
@@ -115,6 +117,9 @@ export function MassOrder() {
             className="w-full resize-y rounded-xl border border-[#7FFF00]/15 bg-black/40 px-4 py-3.5 font-mono text-[13px] text-white/90 outline-none transition-colors placeholder:text-white/30 focus:border-[#7FFF00]/40"
           />
 
+          {servicesError && (
+            <p className="text-xs text-red-400">Could not load services: {servicesError}</p>
+          )}
           {tooMany && (
             <p className="text-xs text-red-400">Maximum {MAX_LINES} orders per submission.</p>
           )}

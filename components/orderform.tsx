@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Search,
   ChevronDown,
@@ -10,6 +10,7 @@ import {
   Plus,
 } from "lucide-react";
 import ArrowFillButton from "@/components/goodbutton";
+import { useServices } from "@/lib/services";
 
 type Option = { id: string; label: string };
 
@@ -18,24 +19,11 @@ export type ServiceItem = Option & {
   min: number;
   max: number;
   platform: string; // "instagram", "youtube", ...
-  startTime: string; // "0-1Hr"
-  speed: string; // "2-5K/D"
-  refill: string | null; // null = no refill, otherwise e.g. "30 Days"
-  linkHint: string; // "Username", "Post link", ...
+  startTime: string;
+  speed: string;
+  refill: string | null; // null = no refill
+  linkHint: string;
 };
-
-// Placeholder data. Replace with real services from Supabase later.
-const { services } = useServices();
-
-const categories = useMemo(
-  () => [...new Set(services.map((s) => s.category))].map((c) => ({ id: c, label: c })),
-  [services],
-);
-const serviceList = services
-  .filter((s) => s.category === categoryId)
-  .map((s) => ({ id: String(s.id), label: s.name, rate: s.rate, min: s.min_qty, max: s.max_qty,
-                 platform: s.platform, refill: s.refill ? "Yes" : null,
-                 startTime: "-", speed: "-", linkHint: "Link" }));
 
 const fieldBase =
   "flex w-full items-center rounded-xl border border-[#7FFF00]/15 bg-black/40 text-[13px] text-white/90 transition-colors focus-within:border-[#7FFF00]/40";
@@ -84,21 +72,25 @@ function Dropdown({
 
       {open && (
         <div className="absolute left-0 top-full z-50 mt-2 max-h-64 w-full overflow-y-auto rounded-xl border border-[#7FFF00]/20 bg-[#050a02] p-2 shadow-lg">
-          {options.map((o) => (
-            <button
-              key={o.id}
-              type="button"
-              onClick={() => {
-                onChange(o.id);
-                setOpen(false);
-              }}
-              className={`flex w-full items-center rounded-md px-2 py-2 text-left text-[13px] hover:bg-[#7FFF00]/10 ${
-                o.id === value ? "text-[#7FFF00]" : "text-white/80"
-              }`}
-            >
-              {renderLabel ? renderLabel(o) : o.label}
-            </button>
-          ))}
+          {options.length === 0 ? (
+            <p className="px-2 py-2 text-[13px] text-white/50">Nothing here yet</p>
+          ) : (
+            options.map((o) => (
+              <button
+                key={o.id}
+                type="button"
+                onClick={() => {
+                  onChange(o.id);
+                  setOpen(false);
+                }}
+                className={`flex w-full items-center rounded-md px-2 py-2 text-left text-[13px] hover:bg-[#7FFF00]/10 ${
+                  o.id === value ? "text-[#7FFF00]" : "text-white/80"
+                }`}
+              >
+                {renderLabel ? renderLabel(o) : o.label}
+              </button>
+            ))
+          )}
         </div>
       )}
     </div>
@@ -114,19 +106,53 @@ export function OrderForm({
 }: {
   onServiceChange?: (s: ServiceItem | null) => void;
 }) {
+  const { services, loading: loadingServices, error: servicesError } = useServices();
+
   const [query, setQuery] = useState("");
-  const [categoryId, setCategoryId] = useState(categories[0].id);
-  const [serviceId, setServiceId] = useState(services[categories[0].id][0].id);
+  const [categoryId, setCategoryId] = useState("");
+  const [serviceId, setServiceId] = useState("");
   const [favorite, setFavorite] = useState(false);
   const [link, setLink] = useState("");
   const [quantity, setQuantity] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
-  const serviceList = services[categoryId] ?? [];
-  const service = serviceList.find((s) => s.id === serviceId) ?? serviceList[0];
+  const categories = useMemo<Option[]>(
+    () => [...new Set(services.map((s) => s.category))].map((c) => ({ id: c, label: c })),
+    [services],
+  );
+
+  // Fall back to the first category / service until the user picks one.
+  const activeCategory = categories.some((c) => c.id === categoryId)
+    ? categoryId
+    : (categories[0]?.id ?? "");
+
+  const serviceList = useMemo<ServiceItem[]>(
+    () =>
+      services
+        .filter((s) => s.category === activeCategory)
+        .map((s) => ({
+          id: String(s.id),
+          label: s.name,
+          rate: s.rate,
+          min: s.min_qty,
+          max: s.max_qty,
+          platform: s.platform,
+          refill: s.refill ? "Yes" : null,
+          startTime: "-",
+          speed: "-",
+          linkHint: "Link",
+        })),
+    [services, activeCategory],
+  );
+
+  const service = serviceList.find((s) => s.id === serviceId) ?? serviceList[0] ?? null;
+  const activeServiceId = service?.id ?? "";
 
   // Tell the parent which service is selected so the details panel can update.
   useEffect(() => {
-    onServiceChange?.(service ?? null);
+    onServiceChange?.(service);
   }, [service, onServiceChange]);
 
   const filteredCategories = query.trim()
@@ -135,8 +161,9 @@ export function OrderForm({
 
   const handleCategory = (id: string) => {
     setCategoryId(id);
-    setServiceId(services[id]?.[0]?.id ?? "");
+    setServiceId("");
     setQuantity("");
+    setFormError(null);
   };
 
   const qty = Number(quantity) || 0;
@@ -148,9 +175,42 @@ export function OrderForm({
     setQuantity(String(Math.min(next, service?.max ?? next)));
   };
 
-  const submitOrder = () => {
-    // TODO: validate and create the order in Supabase
-    console.log({ serviceId, link, quantity: qty, charge });
+  const submitOrder = async () => {
+    if (submitting) return;
+    setFormError(null);
+    setSuccess(null);
+
+    if (!service) return setFormError("Select a service.");
+    if (!link.trim()) return setFormError("Enter a link.");
+    if (!Number.isInteger(qty) || qty < service.min || qty > service.max) {
+      return setFormError(
+        `Quantity must be between ${service.min.toLocaleString()} and ${service.max.toLocaleString()}.`,
+      );
+    }
+
+    setSubmitting(true);
+    try {
+      // The server recomputes price and checks balance. Nothing here is trusted.
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ serviceId: service.id, link: link.trim(), quantity: qty }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json.error ?? "Could not place order.");
+
+      setSuccess(
+        json.warning
+          ? `Order #${json.orderId} placed. ${json.warning}`
+          : `Order #${json.orderId} placed.`,
+      );
+      setLink("");
+      setQuantity("");
+    } catch (e) {
+      setFormError(e instanceof Error ? e.message : "Could not place order.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -173,11 +233,16 @@ export function OrderForm({
         />
       </div>
 
+      {servicesError && (
+        <p className="text-xs text-red-400">Could not load services: {servicesError}</p>
+      )}
+      {loadingServices && <p className="text-xs text-white/50">Loading services...</p>}
+
       {/* Category */}
       <div>
         <Label>Category</Label>
         <Dropdown
-          value={categoryId}
+          value={activeCategory}
           options={filteredCategories}
           onChange={handleCategory}
         />
@@ -202,9 +267,12 @@ export function OrderForm({
           </button>
         </div>
         <Dropdown
-          value={serviceId}
+          value={activeServiceId}
           options={serviceList}
-          onChange={setServiceId}
+          onChange={(id) => {
+            setServiceId(id);
+            setFormError(null);
+          }}
           renderLabel={(o) => (
             <span className="flex items-center gap-2">
               <span className="shrink-0 rounded-full bg-[#7FFF00]/20 px-2 py-0.5 text-[11px] font-semibold text-[#7FFF00]">
@@ -283,23 +351,28 @@ export function OrderForm({
         </div>
       </div>
 
+      {formError && <p className="text-xs text-red-400">{formError}</p>}
+      {success && <p className="text-xs text-[#7FFF00]">{success}</p>}
+
       {/* Submit */}
-      <ArrowFillButton
-        btnText="Submit"
-        href="#"
-        role="button"
-        onClick={(e) => {
-          e.preventDefault();
-          submitOrder();
-        }}
-        bgColor="#7FFF00"
-        textColor="#000000"
-        fillBgColor="#000000"
-        fillTextColor="#7FFF00"
-        hoverFillBgColor="#000000"
-        hoverFillTextColor="#7FFF00"
-        className="!w-full !h-14 !text-[14px] !font-semibold ![--pad-x:16px] ![--pad-r:12px] ![--icon-circle:40px] ![--icon-right:8px]"
-      />
+      <div className={submitting ? "pointer-events-none opacity-60" : ""}>
+        <ArrowFillButton
+          btnText={submitting ? "Submitting..." : "Submit"}
+          href="#"
+          role="button"
+          onClick={(e) => {
+            e.preventDefault();
+            submitOrder();
+          }}
+          bgColor="#7FFF00"
+          textColor="#000000"
+          fillBgColor="#000000"
+          fillTextColor="#7FFF00"
+          hoverFillBgColor="#000000"
+          hoverFillTextColor="#7FFF00"
+          className="!w-full !h-14 !text-[14px] !font-semibold ![--pad-x:16px] ![--pad-r:12px] ![--icon-circle:40px] ![--icon-right:8px]"
+        />
+      </div>
     </form>
   );
 }

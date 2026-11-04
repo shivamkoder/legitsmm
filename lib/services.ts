@@ -1,5 +1,20 @@
 import { createClient } from "@/lib/supabase/client";
+import { useEffect, useState } from "react";
 
+export function useServices() {
+  const [services, setServices] = useState<DbService[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchServices()
+      .then(setServices)
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  return { services, loading, error };
+}
 export type DbService = {
   id: number;
   platform: string;

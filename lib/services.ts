@@ -1,47 +1,305 @@
-import { createClient } from "@/lib/supabase/client";
-import { useEffect, useState } from "react";
+"use client";
 
-export function useServices() {
-  const [services, setServices] = useState<DbService[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { LayoutGrid, ChevronDown, Filter, Search, Check } from "lucide-react";
+import {
+  SiInstagram,
+  SiTelegram,
+  SiFacebook,
+  SiYoutube,
+  SiX,
+  SiTiktok,
+  SiSpotify,
+  SiTwitch,
+  SiPinterest,
+  SiSnapchat,
+  SiDiscord,
+  SiReddit,
+  SiWhatsapp,
+} from "react-icons/si";
+import { useServices } from "@/lib/services";
 
-  useEffect(() => {
-    fetchServices()
-      .then(setServices)
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
-  }, []);
+type Platform = { id: string; label: string; icon: React.ElementType; color: string };
 
-  return { services, loading, error };
-}
-export type DbService = {
-  id: number;
+// Same order as the reference screenshot
+const mainPlatforms: Platform[] = [
+  { id: "instagram", label: "Instagram", icon: SiInstagram, color: "#E1306C" },
+  { id: "youtube", label: "YouTube", icon: SiYoutube, color: "#FF0000" },
+  { id: "facebook", label: "Facebook", icon: SiFacebook, color: "#1877F2" },
+  { id: "x", label: "X", icon: SiX, color: "#FFFFFF" },
+  { id: "tiktok", label: "TikTok", icon: SiTiktok, color: "#FFFFFF" },
+  { id: "telegram", label: "Telegram", icon: SiTelegram, color: "#2AABEE" },
+  { id: "spotify", label: "Spotify", icon: SiSpotify, color: "#1DB954" },
+];
+
+const otherPlatforms: Platform[] = [
+  { id: "twitch", label: "Twitch", icon: SiTwitch, color: "#9146FF" },
+  { id: "pinterest", label: "Pinterest", icon: SiPinterest, color: "#E60023" },
+  { id: "snapchat", label: "Snapchat", icon: SiSnapchat, color: "#FFFC00" },
+  { id: "discord", label: "Discord", icon: SiDiscord, color: "#5865F2" },
+  { id: "reddit", label: "Reddit", icon: SiReddit, color: "#FF4500" },
+  { id: "whatsapp", label: "WhatsApp", icon: SiWhatsapp, color: "#25D366" },
+];
+
+export type Service = {
+  id: string;
   platform: string;
-  category: string;
   name: string;
-  type: string;
-  rate: number;
-  min_qty: number;
-  max_qty: number;
-  refill: boolean;
+  rate: number; // per 1000
+  min: number;
+  max: number;
 };
 
-// Supabase returns at most 1000 rows per request, so page through.
-export async function fetchServices(): Promise<DbService[]> {
-  const supabase = createClient();
-  const all: DbService[] = [];
-  for (let from = 0; ; from += 1000) {
-    const { data, error } = await supabase
-      .from("services")
-      .select("id, platform, category, name, type, rate, min_qty, max_qty, refill")
-      .eq("is_active", true)
-      .order("category")
-      .order("rate")
-      .range(from, from + 999);
-    if (error) throw new Error(error.message);
-    all.push(...(data as DbService[]));
-    if (!data || data.length < 1000) break;
-  }
-  return all;
+type Sort = "default" | "price-asc" | "price-desc" | "min-asc";
+const sortOptions: { id: Sort; label: string }[] = [
+  { id: "default", label: "Default" },
+  { id: "price-asc", label: "Price: low to high" },
+  { id: "price-desc", label: "Price: high to low" },
+  { id: "min-asc", label: "Lowest minimum" },
+];
+
+const pillBase =
+  "flex items-center gap-2 rounded-xl border px-4 py-2.5 text-[13px] transition-colors outline-none focus-visible:ring-1 focus-visible:ring-[#7FFF00]/60";
+const pillClass = (active: boolean) =>
+  `${pillBase} ${
+    active
+      ? "border-[#7FFF00]/50 bg-[#7FFF00]/10 text-[#7FFF00]"
+      : "border-[#7FFF00]/15 bg-[#050a02] text-white/80 hover:border-[#7FFF00]/30 hover:text-white"
+  }`;
+
+function useClickOutside(ref: React.RefObject<HTMLDivElement | null>, onOut: () => void) {
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) onOut();
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [ref, onOut]);
+}
+
+function OthersDropdown({
+  value,
+  onSelect,
+}: {
+  value: string;
+  onSelect: (id: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useClickOutside(ref, () => setOpen(false));
+  const active = otherPlatforms.find((p) => p.id === value);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className={pillClass(!!active)}
+      >
+        {active ? active.label : "Others"}
+        <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div className="absolute left-0 top-full z-50 mt-2 w-48 rounded-xl border border-[#7FFF00]/20 bg-[#050a02] p-2 shadow-lg">
+          {otherPlatforms.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => {
+                onSelect(p.id);
+                setOpen(false);
+              }}
+              className="flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-[13px] text-white/80 hover:bg-[#7FFF00]/10 hover:text-white"
+            >
+              <p.icon className="h-4 w-4" style={{ color: p.color }} />
+              {p.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MoreFilter({ value, onChange }: { value: Sort; onChange: (s: Sort) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useClickOutside(ref, () => setOpen(false));
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className={pillClass(value !== "default")}
+      >
+        <Filter className="h-4 w-4" fill="currentColor" strokeWidth={1.5} />
+        More Filter
+        <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full z-50 mt-2 w-56 rounded-xl border border-[#7FFF00]/20 bg-[#050a02] p-2 shadow-lg">
+          <p className="px-2 pb-1 pt-1 text-xs text-[#7FFF00]/60">Sort by</p>
+          {sortOptions.map((o) => (
+            <button
+              key={o.id}
+              type="button"
+              onClick={() => {
+                onChange(o.id);
+                setOpen(false);
+              }}
+              className={`flex w-full items-center justify-between rounded-md px-2 py-2 text-[13px] hover:bg-[#7FFF00]/10 ${
+                o.id === value ? "text-[#7FFF00]" : "text-white/80"
+              }`}
+            >
+              {o.label}
+              {o.id === value && <Check className="h-4 w-4" />}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const cols =
+  "grid grid-cols-[70px_minmax(220px,4fr)_110px_110px_110px_100px] items-center gap-4 px-5";
+
+export function Services({ onNavigate }: { onNavigate?: (id: string) => void }) {
+  const { services, loading, error } = useServices();
+  const [platform, setPlatform] = useState("all");
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState<Sort>("default");
+
+  const all: Service[] = useMemo(
+    () =>
+      services.map((s) => ({
+        id: String(s.id),
+        platform: s.platform,
+        name: s.name,
+        rate: s.rate,
+        min: s.min_qty,
+        max: s.max_qty,
+      })),
+    [services],
+  );
+
+  const visible = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const list = all.filter(
+      (s) =>
+        (platform === "all" || s.platform === platform) &&
+        (!q || s.name.toLowerCase().includes(q) || s.id.includes(q)),
+    );
+    if (sort === "price-asc") list.sort((a, b) => a.rate - b.rate);
+    if (sort === "price-desc") list.sort((a, b) => b.rate - a.rate);
+    if (sort === "min-asc") list.sort((a, b) => a.min - b.min);
+    return list;
+  }, [all, platform, query, sort]);
+
+  return (
+    <div className="flex flex-col gap-5">
+      {/* Platform row */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            type="button"
+            onClick={() => setPlatform("all")}
+            aria-pressed={platform === "all"}
+            className={pillClass(platform === "all")}
+          >
+            <LayoutGrid className="h-4 w-4" strokeWidth={1.5} />
+            All
+          </button>
+
+          {mainPlatforms.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => setPlatform(p.id)}
+              aria-pressed={platform === p.id}
+              className={pillClass(platform === p.id)}
+            >
+              <p.icon className="h-4 w-4" style={{ color: p.color }} />
+              {p.label}
+            </button>
+          ))}
+
+          <OthersDropdown value={platform} onSelect={setPlatform} />
+        </div>
+
+        <MoreFilter value={sort} onChange={setSort} />
+      </div>
+
+      {/* Search */}
+      <div className="flex w-full items-center gap-3 rounded-xl border border-[#7FFF00]/15 bg-[#050a02] px-4 transition-colors focus-within:border-[#7FFF00]/40">
+        <Search className="h-5 w-5 shrink-0 text-[#7FFF00]" strokeWidth={1.75} />
+        <span className="h-6 w-px bg-[#7FFF00]/15" />
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search"
+          className="w-full bg-transparent py-3.5 text-[13px] text-white/90 outline-none placeholder:text-white/40"
+        />
+      </div>
+
+      {/* Table */}
+      <div className="overflow-hidden rounded-2xl border border-[#7FFF00]/15 bg-[#050a02]">
+        <div className="overflow-x-auto">
+          <div className="min-w-[800px]">
+            <div className={`${cols} h-11 bg-black text-[13px] font-semibold text-white`}>
+              <span>ID</span>
+              <span>Service</span>
+              <span>Rate / 1000</span>
+              <span>Min</span>
+              <span>Max</span>
+              <span />
+            </div>
+
+            {loading ? (
+              <div className="flex h-64 items-center justify-center text-[13px] text-white/60">
+                Loading services...
+              </div>
+            ) : error ? (
+              <div className="flex h-64 items-center justify-center text-[13px] text-red-400">
+                Could not load services: {error}
+              </div>
+            ) : visible.length === 0 ? (
+              <div className="flex h-64 flex-col items-center justify-center gap-2">
+                <h3 className="text-xl font-semibold text-white">No services found</h3>
+                <p className="text-[13px] text-white/60">Try a different platform or search.</p>
+              </div>
+            ) : (
+              visible.map((s) => (
+                <div
+                  key={s.id}
+                  className={`${cols} border-t border-[#7FFF00]/10 py-3.5 text-[13px] text-white/80`}
+                >
+                  <span className="w-fit rounded-full bg-[#7FFF00]/20 px-2 py-0.5 text-[11px] font-semibold text-[#7FFF00]">
+                    {s.id}
+                  </span>
+                  <span className="truncate" title={s.name}>
+                    {s.name}
+                  </span>
+                  <span className="text-white">${s.rate.toFixed(2)}</span>
+                  <span>{s.min.toLocaleString()}</span>
+                  <span>{s.max.toLocaleString()}</span>
+                  <button
+                    type="button"
+                    onClick={() => onNavigate?.("new-order")}
+                    className="rounded-lg bg-[#7FFF00] px-3 py-1.5 text-xs font-semibold text-black transition-colors hover:bg-[#7FFF00]/85"
+                  >
+                    Order
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

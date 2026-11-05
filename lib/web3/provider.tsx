@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { createAppKit } from "@reown/appkit/react";
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
 import { polygon, bsc, type AppKitNetwork } from "@reown/appkit/networks";
@@ -40,9 +40,15 @@ if (web3Ready) {
 
 const queryClient = new QueryClient();
 
+// The adapter and wagmi can resolve different copies of @wagmi/core, which
+// makes their Config types incompatible even though they are identical at
+// runtime. Cast to the type WagmiProvider expects.
+type WagmiConfig = ComponentProps<typeof WagmiProvider>["config"];
+const wagmiConfig = wagmiAdapter.wagmiConfig as unknown as WagmiConfig;
+
 export function Web3Provider({ children }: { children: ReactNode }) {
   return (
-    <WagmiProvider config={wagmiAdapter.wagmiConfig}>
+    <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </WagmiProvider>
   );

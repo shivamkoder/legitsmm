@@ -57,6 +57,6 @@
   
   "overrides": {
     "@wagmi/core": "$@wagmi/core"
-  },
+  }
 }
 

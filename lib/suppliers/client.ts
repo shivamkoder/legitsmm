@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { resolveSupplierKey } from "@/lib/suppliers/keys";
 
 export type Supplier = {
   id: number;
@@ -57,10 +58,21 @@ export async function getSupplier(id: number): Promise<Supplier> {
   return data as Supplier;
 }
 
-async function call(supplier: Supplier, params: Record<string, string>): Promise<unknown> {
-  const key = process.env[supplier.api_key_env];
+/**
+ * The one place a supplier API key is used. Every call (add, status,
+ * services, balance) goes through here as a form-encoded POST: key=...&action=...
+ */
+async function call(
+  supplier: Supplier,
+  params: Record<string, string>,
+  timeoutMs: number = TIMEOUT_MS,
+): Promise<unknown> {
+  const key = resolveSupplierKey(supplier.api_key_env);
   if (!key) {
-    throw new SupplierError(`Missing env var ${supplier.api_key_env}`, "not_sent");
+    throw new SupplierError(
+      `${supplier.name}: no API key found for "${supplier.api_key_env}"`,
+      "not_sent",
+    );
   }
 
   let res: Response;
@@ -69,7 +81,7 @@ async function call(supplier: Supplier, params: Record<string, string>): Promise
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({ key, ...params }),
-      signal: AbortSignal.timeout(TIMEOUT_MS),
+      signal: AbortSignal.timeout(timeoutMs),
       cache: "no-store",
     });
   } catch {
@@ -84,6 +96,24 @@ async function call(supplier: Supplier, params: Record<string, string>): Promise
   } catch {
     throw new SupplierError(`${supplier.name}: invalid JSON reply`, "unknown");
   }
+}
+
+/** Supplier wallet balance. Handy to confirm the key and URL work. */
+export async function getBalance(
+  supplier: Supplier,
+): Promise<{ balance: string; currency: string }> {
+  const json = (await call(supplier, { action: "balance" })) as {
+    balance?: unknown;
+    currency?: unknown;
+    error?: unknown;
+  } | null;
+  if (json && json.error) {
+    throw new SupplierError(String(json.error), "rejected");
+  }
+  if (!json || json.balance === undefined || json.balance === null) {
+    throw new SupplierError(`${supplier.name}: unexpected balance response`, "unknown");
+  }
+  return { balance: String(json.balance), currency: String(json.currency ?? "USD") };
 }
 
 /** Sends an order. Returns the supplier's order id. */
@@ -174,9 +204,9 @@ export async function getStatuses(
   return out;
 }
 
-/** Full wholesale catalog, for the daily sync job. */
+/** Full wholesale catalog, for the sync job. Big catalogs can be slow, so give it 50s. */
 export async function getServices(supplier: Supplier): Promise<SupplierService[]> {
-  const json = await call(supplier, { action: "services" });
+  const json = await call(supplier, { action: "services" }, 50_000);
   if (!Array.isArray(json)) {
     const msg =
       json && typeof json === "object" && "error" in json

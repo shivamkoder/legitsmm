@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { LayoutGrid, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import {
   SiInstagram,
   SiTelegram,
@@ -55,7 +55,7 @@ const pillClass = (active: boolean) =>
   }`;
 
 export function PlatformFilter({
-  value = "all",
+  value = "instagram",
   onChange,
 }: {
   value?: string;
@@ -83,17 +83,6 @@ export function PlatformFilter({
 
   return (
     <div className="flex flex-wrap items-center gap-2.5">
-      {/* All */}
-      <button
-        type="button"
-        onClick={() => select("all")}
-        aria-pressed={value === "all"}
-        className={pillClass(value === "all")}
-      >
-        <LayoutGrid className="h-4 w-4" strokeWidth={1.5} />
-        All
-      </button>
-
       {/* Main platforms */}
       {mainPlatforms.map((p) => (
         <button

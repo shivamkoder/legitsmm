@@ -8,7 +8,7 @@ import { syncSupplierCatalog } from "@/lib/suppliers/sync";
 export const maxDuration = 60;
 
 // Only these signed-in emails can use this route. Put YOUR login email here.
-const ADMIN_EMAILS = ["your-email@example.com"];
+const ADMIN_EMAILS = ["shivamkumar210107@gmail.com"];
 
 /**
  * Open while signed in as an admin:

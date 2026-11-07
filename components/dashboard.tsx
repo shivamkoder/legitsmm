@@ -116,7 +116,6 @@ export function SidebarNav({
     >
       <div className="mb-3 px-2.5 py-3">
         <img src="/legit-logo.png" alt="LegitSMM" className="h-8 w-auto" />
-        
       </div>
 
       <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] flex flex-col gap-0.5">
@@ -242,7 +241,8 @@ function HeaderActions({ onSelect }: { onSelect: (id: string) => void }) {
 export default function SidebarNavPreview() {
   const [isOpen, setIsOpen] = useState(true);
   const [activeId, setActiveId] = useState("new-order");
-  const [platform, setPlatform] = useState("all");
+  // Start on Instagram: there is no "All" option anymore.
+  const [platform, setPlatform] = useState("instagram");
   const [selectedService, setSelectedService] = useState<ServiceItem | null>(null);
   const router = useRouter();
 
@@ -312,24 +312,27 @@ export default function SidebarNavPreview() {
 
                 <div className="w-full rounded-xl border border-[#7FFF00]/15 bg-[#050a02] p-5 md:p-6">
                   <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                    <OrderForm onServiceChange={setSelectedService} />
-<ServiceDetails service={selectedService} />
+                    <OrderForm
+                      platform={platform}
+                      onServiceChange={setSelectedService}
+                    />
+                    <ServiceDetails service={selectedService} />
                   </div>
                 </div>
               </>
             ) : activeId === "add-funds" ? (
               <AddFunds />
-            ): activeId === "mass-order" ? (
-  <MassOrder />
-) : activeId === "orders" ? (
+            ) : activeId === "mass-order" ? (
+              <MassOrder />
+            ) : activeId === "orders" ? (
               <Orders />
             ) : activeId === "services" ? (
               <Services onNavigate={handleSelect} />
             ) : activeId === "affiliates" ? (
               <Affiliates />
-            )
-              :activeId === "tickets" ? (
-  <Tickets />): (
+            ) : activeId === "tickets" ? (
+              <Tickets />
+            ) : (
               <div className="flex h-64 items-center justify-center rounded-xl border border-[#7FFF00]/15 bg-[#050a02] text-sm text-[#7FFF00]/60">
                 {activeTitle} page coming soon
               </div>

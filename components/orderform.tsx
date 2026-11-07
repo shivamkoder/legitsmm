@@ -102,8 +102,10 @@ const Label = ({ children }: { children: React.ReactNode }) => (
 );
 
 export function OrderForm({
+  platform,
   onServiceChange,
 }: {
+  platform: string;
   onServiceChange?: (s: ServiceItem | null) => void;
 }) {
   const { services, loading: loadingServices, error: servicesError } = useServices();
@@ -118,9 +120,29 @@ export function OrderForm({
   const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  // Only the services of the platform picked above the form.
+  const platformServices = useMemo(
+    () => services.filter((s) => s.platform === platform),
+    [services, platform],
+  );
+
+  // Start fresh whenever the user switches platform.
+  useEffect(() => {
+    setCategoryId("");
+    setServiceId("");
+    setQuantity("");
+    setQuery("");
+    setFormError(null);
+    setSuccess(null);
+  }, [platform]);
+
   const categories = useMemo<Option[]>(
-    () => [...new Set(services.map((s) => s.category))].map((c) => ({ id: c, label: c })),
-    [services],
+    () =>
+      [...new Set(platformServices.map((s) => s.category))].map((c) => ({
+        id: c,
+        label: c,
+      })),
+    [platformServices],
   );
 
   // Fall back to the first category / service until the user picks one.
@@ -130,7 +152,7 @@ export function OrderForm({
 
   const serviceList = useMemo<ServiceItem[]>(
     () =>
-      services
+      platformServices
         .filter((s) => s.category === activeCategory)
         .map((s) => ({
           id: String(s.id),
@@ -144,7 +166,7 @@ export function OrderForm({
           speed: "-",
           linkHint: "Link",
         })),
-    [services, activeCategory],
+    [platformServices, activeCategory],
   );
 
   const service = serviceList.find((s) => s.id === serviceId) ?? serviceList[0] ?? null;
@@ -237,6 +259,9 @@ export function OrderForm({
         <p className="text-xs text-red-400">Could not load services: {servicesError}</p>
       )}
       {loadingServices && <p className="text-xs text-white/50">Loading services...</p>}
+      {!loadingServices && !servicesError && platformServices.length === 0 && (
+        <p className="text-xs text-white/50">No services available for this platform yet.</p>
+      )}
 
       {/* Category */}
       <div>

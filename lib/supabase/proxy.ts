@@ -4,7 +4,18 @@ import { hasEnvVars } from "../utils";
 
 // Pages anyone can open without signing in (legal pages must be public
 // so payment gateways and visitors can read them).
-const PUBLIC_PATHS = ["/about", "/terms", "/privacy", "/refund-policy", "/disclaimer"];
+//
+// /api/jobs/* are called by QStash, which has no login cookie. Without this
+// entry the proxy redirects them to /auth/login and the jobs never run.
+// Each job route verifies the QStash signature itself, so it is safe to open.
+const PUBLIC_PATHS = [
+  "/about",
+  "/terms",
+  "/privacy",
+  "/refund-policy",
+  "/disclaimer",
+  "/api/jobs",
+];
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({

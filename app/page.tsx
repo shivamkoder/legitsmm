@@ -14,6 +14,7 @@ import { SqueezeCarousel, type SqueezeSlide } from "@/components/slides";
 import InfoCards from "@/components/info";
 import { Reveal2 } from "@/components/differ";
 import { ShieldCheck, Zap, Headset } from "lucide-react";
+import { TestimonialsSection } from "@/components/testimonial";
 
 const features = [
   {

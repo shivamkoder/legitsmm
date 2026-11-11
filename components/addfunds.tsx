@@ -6,8 +6,6 @@ import {
   ChevronDown,
   CreditCard,
   FileSearch,
-  Globe,
-  Landmark,
   Search,
   Smartphone,
   Ticket,
@@ -43,9 +41,8 @@ export type Deposit = {
 
 const soon = ["This payment method is coming soon."];
 
-// Same order as the reference screenshot.
 // Only set enabled: true once the method is actually integrated on the server.
-// feePercent values below are placeholders. Put in your real numbers.
+// feePercent values are placeholders. Put in your real numbers.
 const methods: Method[] = [
   {
     id: "cryptomus",
@@ -66,22 +63,34 @@ const methods: Method[] = [
     ],
     enabled: true,
   },
-  { id: "heleket", label: "Heleket", logo: "/payments/heleket.png", icon: Bitcoin, instruction: soon, min: 5, enabled: false },
-  { id: "tikokart", label: "Credit Card - Debit Card Payment | TikoKart", logo: "/payments/tikokart.png", icon: CreditCard, instruction: soon, min: 5, feePercent: 4, enabled: false },
-  { id: "wise", label: "Wise", logo: "/payments/wise.png", icon: Landmark, instruction: soon, min: 5, feePercent: 2, enabled: false },
-  { id: "paypal", label: "PayPal", logo: "/payments/paypal.png", icon: Wallet, instruction: soon, min: 5, feePercent: 5, enabled: false },
-  { id: "pix", label: "PIX", logo: "/payments/pix.png", icon: Smartphone, instruction: soon, min: 5, enabled: false },
-  { id: "revolut", label: "Revolut", logo: "/payments/revolut.png", icon: Landmark, instruction: soon, min: 5, enabled: false },
-  { id: "africa-bank", label: "Africa Bank Transfer", logo: "/payments/africa-bank.png", icon: Landmark, instruction: soon, min: 5, enabled: false },
-  { id: "alipay", label: "Alipay (Cina-pay)", logo: "/payments/alipay.png", icon: Smartphone, instruction: soon, min: 5, enabled: false },
-  { id: "skrill", label: "Skrill", logo: "/payments/skrill.png", icon: Wallet, instruction: soon, min: 5, enabled: false },
-  { id: "cashmaal", label: "Cashmaal | Jazzcash", logo: "/payments/cashmaal.png", icon: Smartphone, instruction: soon, min: 5, enabled: false },
-  { id: "manual-crypto", label: "Manuel Crypto", logo: "/payments/manual-crypto.png", icon: Bitcoin, instruction: soon, min: 5, enabled: false },
-  { id: "coinpayments", label: "Coinpayments", logo: "/payments/coinpayments.png", icon: Bitcoin, instruction: soon, min: 5, enabled: false },
-  { id: "payoneer", label: "Payoneer", logo: "/payments/payoneer.png", icon: Globe, instruction: soon, min: 5, enabled: false },
-  { id: "bkash", label: "bKash", logo: "/payments/bkash.png", icon: Smartphone, instruction: soon, min: 5, enabled: false },
-  { id: "nagad", label: "Nagad", logo: "/payments/nagad.png", icon: Smartphone, instruction: soon, min: 5, enabled: false },
-  { id: "shopier", label: "Turkish Card Payment - Shopier", logo: "/payments/shopier.png", icon: CreditCard, instruction: soon, min: 5, enabled: false },
+  {
+    id: "oxapay",
+    label: "Oxapay",
+    logo: "/payments/oxapay.png",
+    icon: Bitcoin,
+    instruction: soon,
+    min: 1,
+    enabled: false, // set to true after the Oxapay API route is integrated
+  },
+  {
+    id: "infinity",
+    label: "Infinity",
+    logo: "/payments/infinity.png",
+    icon: Wallet,
+    instruction: soon,
+    min: 5,
+    enabled: false, // set to true after the Infinity gateway is integrated
+  },
+  {
+    id: "paypal",
+    label: "PayPal",
+    logo: "/payments/paypal.png",
+    icon: Wallet,
+    instruction: soon,
+    min: 5,
+    feePercent: 5,
+    enabled: false,
+  },
   {
     id: "upi",
     label: "UPI (GPay, PhonePe, Paytm)",
@@ -96,7 +105,6 @@ const methods: Method[] = [
     enabled: false, // set to true only after the gateway is integrated
   },
 ];
-
 const card = "rounded-2xl border border-[#7FFF00]/15 bg-[#050a02]";
 const field =
   "flex w-full items-center rounded-xl border border-[#7FFF00]/15 bg-black/40 text-[13px] text-white/90 transition-colors focus-within:border-[#7FFF00]/40";

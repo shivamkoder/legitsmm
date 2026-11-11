@@ -1,67 +1,54 @@
-"use client";
-
-import Image from "next/image"
-import React from "react"
-import { cn } from "@/lib/utils"
-import Link from "next/link"
+import React from "react";
+import { cn } from "@/lib/utils";
 
 const cardContents = [
   {
-    title: "Beautiful Components",
+    title: "Every platform, one dashboard",
     description:
-      "Ruixen UI provides stunning, ready-made components built with consistent design and performance in mind.",
+      "Instagram, YouTube, TikTok, Telegram, Facebook, X, Spotify and more. Order, track and top up from one place without juggling tools.",
   },
   {
-    title: "Developer Friendly",
+    title: "Clear pricing",
     description:
-      "Simple APIs and excellent documentation make it easy to integrate and customize Ruixen UI in your apps.",
+      "Every service shows its rate per 1000, plus its minimum and maximum, before you pay. No hidden charges at checkout.",
   },
   {
-    title: "Flexible Layouts",
+    title: "Built for resellers and power users",
     description:
-      "Design dynamic, responsive layouts using our grid utilities and flex-based helpers. Whether you're building dashboards, landing pages, or nested components, Ruixen UI provides composable layout primitives that scale beautifully across screen sizes. With mobile-first defaults, built-in breakpoints, and utilities like col-span, row-span, gap control, and responsive spacing, your UI adapts effortlessly to every device.",
-  },  
-  {
-    title: "Dark Mode Support",
-    description:
-      "Every component is thoughtfully designed to work seamlessly in both light and dark themes.",
+      "Place up to 100 orders at once with Mass order, connect your own panel or scripts through the API, and earn commission with the affiliate program. Refill options are available on supported services.",
   },
   {
-    title: "Fast & Lightweight",
+    title: "Secure payments",
     description:
-      "Built for speed and performance, Ruixen UI ensures quick load times without sacrificing quality.",
+      "Deposits go through trusted payment gateways. We never see or store your card details.",
   },
-]
-
+  {
+    title: "Real support",
+    description:
+      "Open a ticket from your dashboard and our team will help with orders, payments and refills.",
+  },
+];
 
 const PlusCard: React.FC<{
-  className?: string
-  title: string
-  description: string
-}> = ({
-  className = "",
-  title,
-  description,
-}) => {
+  className?: string;
+  title: string;
+  description: string;
+}> = ({ className = "", title, description }) => {
   return (
     <div
       className={cn(
-        "relative border border-dashed border-zinc-400 dark:border-zinc-700 rounded-lg p-6 bg-white dark:bg-zinc-950 min-h-[200px]",
-        "flex flex-col justify-between",
-        className
+        "relative flex min-h-[200px] flex-col justify-between rounded-lg border border-dashed border-[#7FFF00]/30 bg-[#050a02] p-6 transition-colors hover:border-[#7FFF00]/60",
+        className,
       )}
-    ><Link href="https://ruixen.com/?utm_source=21stdev&utm_medium=button&utm_campaign=ruixen_bento_cards">
+    >
       <CornerPlusIcons />
-      {/* Content */}
       <div className="relative z-10 space-y-2">
-        <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-          {title}
-        </h3>
-        <p className="text-gray-700 dark:text-gray-300">{description}</p>
-      </div></Link>
+        <h3 className="text-xl font-bold text-white">{title}</h3>
+        <p className="text-white/70">{description}</p>
+      </div>
     </div>
-  )
-}
+  );
+};
 
 const CornerPlusIcons = () => (
   <>
@@ -70,7 +57,7 @@ const CornerPlusIcons = () => (
     <PlusIcon className="absolute -bottom-3 -left-3" />
     <PlusIcon className="absolute -bottom-3 -right-3" />
   </>
-)
+);
 
 const PlusIcon = ({ className }: { className?: string }) => (
   <svg
@@ -81,18 +68,18 @@ const PlusIcon = ({ className }: { className?: string }) => (
     height={24}
     strokeWidth="1"
     stroke="currentColor"
-    className={`dark:text-white text-black size-6 ${className}`}
+    aria-hidden="true"
+    className={cn("size-6 text-[#7FFF00]", className)}
   >
     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m6-6H6" />
   </svg>
-)
+);
 
-export default function RuixenBentoCards() {
+export default function InfoCards() {
   return (
-    <section className="bg-white dark:bg-black dark:bg-transparent border border-gray-200 dark:border-gray-800">
-      <div className="mx-auto container border border-gray-200 dark:border-gray-800 py-12 border-t-0 px-4">
-        {/* Responsive Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 auto-rows-auto gap-4">
+    <section className="border border-[#7FFF00]/15 bg-black">
+      <div className="container mx-auto border-t-0 px-4 py-12">
+        <div className="grid auto-rows-auto grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
           <PlusCard {...cardContents[0]} className="lg:col-span-3 lg:row-span-2" />
           <PlusCard {...cardContents[1]} className="lg:col-span-2 lg:row-span-2" />
           <PlusCard {...cardContents[2]} className="lg:col-span-4 lg:row-span-1" />
@@ -100,16 +87,16 @@ export default function RuixenBentoCards() {
           <PlusCard {...cardContents[4]} className="lg:col-span-2 lg:row-span-1" />
         </div>
 
-        {/* Section Footer Heading */}
-        <div className="max-w-2xl ml-auto text-right px-4 mt-6 lg:-mt-20">
-          <h2 className="text-4xl md:text-6xl font-bold text-black dark:text-white mb-4">
-            Built for performance. Designed for flexibility.
+        <div className="mt-6 ml-auto max-w-2xl px-4 text-right lg:-mt-20">
+          <h2 className="mb-4 text-4xl font-bold text-[#7FFF00] md:text-6xl">
+            Built for speed. Designed for growth.
           </h2>
-          <p className="text-gray-600 dark:text-gray-400 text-lg">
-            Ruixen UI gives you the tools to build beautiful, high-performing websites with lightning speed. Each component is thoughtfully designed to be flexible, reusable, and accessible.
+          <p className="text-lg text-white/60">
+            Legit SMM puts everything you need to grow your public profiles in one simple panel,
+            from first order to repeat refills.
           </p>
         </div>
       </div>
     </section>
-  )
+  );
 }

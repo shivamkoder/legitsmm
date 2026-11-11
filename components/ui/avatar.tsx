@@ -44,10 +44,12 @@ const AvatarImage = React.forwardRef<
   React.ImgHTMLAttributes<HTMLImageElement>
 >(({ className, src, alt = "", ...props }, ref) => {
   const { status, setStatus } = React.useContext(AvatarContext);
+  // React 19 types allow `src` to be a Blob; we only support URL strings.
+  const url = typeof src === "string" ? src : undefined;
 
   // Preload so we know whether to show the image or the fallback.
   React.useEffect(() => {
-    if (!src) {
+    if (!url) {
       setStatus("error");
       return;
     }
@@ -56,11 +58,11 @@ const AvatarImage = React.forwardRef<
     const img = new window.Image();
     img.onload = () => active && setStatus("loaded");
     img.onerror = () => active && setStatus("error");
-    img.src = src;
+    img.src = url;
     return () => {
       active = false;
     };
-  }, [src, setStatus]);
+  }, [url, setStatus]);
 
   if (status !== "loaded") return null;
 
@@ -68,7 +70,7 @@ const AvatarImage = React.forwardRef<
     // eslint-disable-next-line @next/next/no-img-element
     <img
       ref={ref}
-      src={src}
+      src={url}
       alt={alt}
       className={cn("aspect-square h-full w-full object-cover", className)}
       {...props}

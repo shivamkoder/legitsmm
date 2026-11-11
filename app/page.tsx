@@ -229,6 +229,12 @@ export default function Home() {
     afterLabel="After"
   />
 </section>
+            {/* TESTIMONIALS */}
+      <section className="dark w-full bg-black text-white px-5 py-16 md:py-24">
+        <TestimonialsSection />
+      </section>
+
+      <LegalFooter />
 
       <LegalFooter />
     </main>

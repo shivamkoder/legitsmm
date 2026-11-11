@@ -12,7 +12,7 @@ import { Affiliates } from "@/components/affiliates";
 import { ImageComparison } from "@/components/comparison";
 import { SqueezeCarousel, type SqueezeSlide } from "@/components/slides";
 import InfoCards from "@/components/info";
-import { Reveal2 } from "@/components/reveal2";
+import { Reveal2 } from "@/components/differ";
 import { ShieldCheck, Zap, Headset } from "lucide-react";
 
 const features = [

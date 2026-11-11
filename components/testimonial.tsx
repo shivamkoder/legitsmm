@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { InfiniteSlider } from "@/components/ui/infinite-slider";
+import { InfiniteSlider } from "@/components/ui/infiniteslider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type Testimonial = {

@@ -11,6 +11,7 @@ import { ServicesMenu } from "@/components/services-menu";
 import { Affiliates } from "@/components/affiliates";
 import { ImageComparison } from "@/components/comparison";
 import { SqueezeCarousel, type SqueezeSlide } from "@/components/slides";
+import InfoCards from "@/components/info";
 
 const features = [
   {
@@ -187,6 +188,12 @@ export default function Home() {
     />
   </div>
 </section>
+      {/* WHY US */}
+      <section className="w-full bg-black text-white px-5 py-16 md:py-24">
+        <div className="max-w-5xl mx-auto">
+          <InfoCards />
+        </div>
+      </section>
 
       <LegalFooter />
     </main>

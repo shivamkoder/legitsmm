@@ -234,7 +234,7 @@ export default function Home() {
         <TestimonialsSection />
       </section>
 
-      <LegalFooter />
+    
 
       <LegalFooter />
     </main>

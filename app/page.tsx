@@ -12,6 +12,8 @@ import { Affiliates } from "@/components/affiliates";
 import { ImageComparison } from "@/components/comparison";
 import { SqueezeCarousel, type SqueezeSlide } from "@/components/slides";
 import InfoCards from "@/components/info";
+import { Reveal2 } from "@/components/reveal2";
+import { ShieldCheck, Zap, Headset } from "lucide-react";
 
 const features = [
   {
@@ -194,6 +196,38 @@ export default function Home() {
           <InfoCards />
         </div>
       </section>
+      {/* BEFORE / AFTER */}
+<section className="dark w-full bg-black text-white">
+  <Reveal2
+    badge={{ label: "Compare", variant: "lime" }}
+    heading="See the difference"
+    description="Drag the slider to compare an account before and after Legit SMM."
+    highlights={[
+      {
+        id: "start",
+        icon: <Zap className="size-5 text-[#7FFF00]" />,
+        title: "Fast to start",
+        description: "Add funds, place an order and it begins processing soon after.",
+      },
+      {
+        id: "pricing",
+        icon: <ShieldCheck className="size-5 text-[#7FFF00]" />,
+        title: "Clear pricing",
+        description: "See the rate per 1000, minimum and maximum before you pay.",
+      },
+      {
+        id: "support",
+        icon: <Headset className="size-5 text-[#7FFF00]" />,
+        title: "Real support",
+        description: "Open a ticket from your dashboard for orders, payments and refills.",
+      },
+    ]}
+    beforeImage={{ src: "/compare/before.png", alt: "Profile before Legit SMM" }}
+    afterImage={{ src: "/compare/after.png", alt: "Profile after Legit SMM" }}
+    beforeLabel="Before"
+    afterLabel="After"
+  />
+</section>
 
       <LegalFooter />
     </main>

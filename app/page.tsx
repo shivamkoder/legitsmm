@@ -10,6 +10,7 @@ import { Logo } from "@/components/logo";
 import { ServicesMenu } from "@/components/services-menu";
 import { Affiliates } from "@/components/affiliates";
 import { ImageComparison } from "@/components/comparison";
+import { SqueezeCarousel, type SqueezeSlide } from "@/components/slides";
 
 const features = [
   {
@@ -29,6 +30,43 @@ const features = [
     title: "Order and Sit Back",
     content: "Let us take care of doing the task,We are legit for a reason.",
     image: "/steps/beach.png",
+  },
+];
+const slides: SqueezeSlide[] = [
+  {
+    title: "Instagram growth.",
+    description: "Followers, likes, views and reels engagement delivered fast with refill options.",
+    background: "linear-gradient(135deg, #feda75, #d62976 55%, #4f5bd5)",
+    action: "Order now",
+    href: "/auth/sign-up",
+  },
+  {
+    title: "YouTube boosts.",
+    description: "Views, watch time and subscribers to help your channel get noticed.",
+    background: "linear-gradient(135deg, #7f0000, #ff0000)",
+    action: "Order now",
+    href: "/auth/sign-up",
+  },
+  {
+    title: "TikTok reach.",
+    description: "Likes, views and followers to push your videos further.",
+    background: "linear-gradient(135deg, #00f2ea, #111111 50%, #ff0050)",
+    action: "Order now",
+    href: "/auth/sign-up",
+  },
+  {
+    title: "Telegram communities.",
+    description: "Members, post views and reactions for channels and groups.",
+    background: "linear-gradient(135deg, #2AABEE, #1b6fa8)",
+    action: "Order now",
+    href: "/auth/sign-up",
+  },
+  {
+    title: "Spotify & more.",
+    description: "Plays, listeners and followers across 7+ platforms in one dashboard.",
+    background: "linear-gradient(135deg, #1DB954, #0b3d1d)",
+    action: "View services",
+    href: "/auth/sign-up",
   },
 ];
 
@@ -129,6 +167,23 @@ export default function Home() {
       afterImage="/compare/after.png"
       altBefore="Profile before Legit SMM"
       altAfter="Profile after Legit SMM"
+    />
+  </div>
+</section>
+
+      {/* PLATFORMS CAROUSEL */}
+<section className="w-full bg-black text-white px-5 py-16 md:py-24">
+  <div className="dark max-w-5xl mx-auto">
+    <h2 className="mb-10 text-3xl md:text-4xl lg:text-5xl font-bold text-center text-[#7FFF00]">
+      Every platform, one panel
+    </h2>
+    <SqueezeCarousel
+      slides={slides}
+      autoplay
+      interval={5000}
+      accent="#7FFF00"
+      accentForeground="#000000"
+      label="Supported platforms"
     />
   </div>
 </section>

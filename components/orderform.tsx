@@ -2,9 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
-  Search,
   ChevronDown,
-  Heart,
   Link2,
   Minus,
   Plus,
@@ -110,10 +108,8 @@ export function OrderForm({
 }) {
   const { services, loading: loadingServices, error: servicesError } = useServices();
 
-  const [query, setQuery] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [serviceId, setServiceId] = useState("");
-  const [favorite, setFavorite] = useState(false);
   const [link, setLink] = useState("");
   const [quantity, setQuantity] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -131,7 +127,6 @@ export function OrderForm({
     setCategoryId("");
     setServiceId("");
     setQuantity("");
-    setQuery("");
     setFormError(null);
     setSuccess(null);
   }, [platform]);
@@ -176,10 +171,6 @@ export function OrderForm({
   useEffect(() => {
     onServiceChange?.(service);
   }, [service, onServiceChange]);
-
-  const filteredCategories = query.trim()
-    ? categories.filter((c) => c.label.toLowerCase().includes(query.toLowerCase()))
-    : categories;
 
   const handleCategory = (id: string) => {
     setCategoryId(id);
@@ -243,18 +234,6 @@ export function OrderForm({
       }}
       className="flex flex-col gap-5"
     >
-      {/* Search */}
-      <div className={`${fieldBase} gap-2.5 px-4 py-3.5`}>
-        <Search className="h-4 w-4 shrink-0 text-white" strokeWidth={2} />
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search"
-          className="w-full bg-transparent outline-none placeholder:text-white/40"
-        />
-      </div>
-
       {servicesError && (
         <p className="text-xs text-red-400">Could not load services: {servicesError}</p>
       )}
@@ -268,29 +247,14 @@ export function OrderForm({
         <Label>Category</Label>
         <Dropdown
           value={activeCategory}
-          options={filteredCategories}
+          options={categories}
           onChange={handleCategory}
         />
       </div>
 
       {/* Service */}
       <div>
-        <div className="mb-2 flex items-center gap-2">
-          <span className="text-[13px] font-medium text-white">Service</span>
-          <button
-            type="button"
-            onClick={() => setFavorite((f) => !f)}
-            aria-pressed={favorite}
-            className={`flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] transition-colors ${
-              favorite
-                ? "border-red-500 bg-red-500/15 text-red-400"
-                : "border-red-500/60 text-red-400 hover:bg-red-500/10"
-            }`}
-          >
-            <Heart className="h-3 w-3" fill={favorite ? "currentColor" : "none"} />
-            {favorite ? "Favorited" : "Add to Favorite"}
-          </button>
-        </div>
+        <Label>Service</Label>
         <Dropdown
           value={activeServiceId}
           options={serviceList}

@@ -12,6 +12,97 @@ import { useServices } from "@/lib/services";
 
 type Option = { id: string; label: string };
 
+export const PLATFORM_CATEGORIES: Record<string, string[]> = {
+  instagram: [
+    "Followers",
+    "Views",
+    "Comments",
+    "Shares",
+    "Likes",
+    "Saves",
+    "Impressions",
+  ],
+  youtube: [
+    "Views",
+    "Subscribers",
+    "Likes",
+    "Comments",
+    "Watch Time",
+    "Shares",
+  ],
+  tiktok: [
+    "Followers",
+    "Likes",
+    "Views",
+    "Shares",
+    "Comments",
+    "Saves",
+  ],
+  telegram: [
+    "Members",
+    "Channel Views",
+    "Post Reactions",
+    "Bot Starts",
+    "Comments",
+  ],
+  facebook: [
+    "Followers",
+    "Page Likes",
+    "Post Likes",
+    "Views",
+    "Shares",
+    "Comments",
+  ],
+  x: [
+    "Followers",
+    "Likes",
+    "Retweets",
+    "Views",
+    "Comments",
+    "Impressions",
+  ],
+  spotify: [
+    "Plays",
+    "Monthly Listeners",
+    "Followers",
+    "Saves",
+    "Playlist Followers",
+  ],
+  twitch: [
+    "Followers",
+    "Live Viewers",
+    "Channel Views",
+    "Chatters",
+  ],
+  pinterest: [
+    "Followers",
+    "Repins",
+    "Board Followers",
+    "Reactions",
+  ],
+  snapchat: [
+    "Followers",
+    "Story Views",
+    "Spotlight Views",
+  ],
+  discord: [
+    "Server Members",
+    "Online Members",
+    "Reactions",
+  ],
+  reddit: [
+    "Upvotes",
+    "Post Karma",
+    "Subreddit Subscribers",
+    "Comments",
+  ],
+  whatsapp: [
+    "Channel Members",
+    "Community Members",
+    "Reactions",
+  ],
+};
+
 export type ServiceItem = Option & {
   rate: number; // price per 1000
   min: number;
@@ -131,38 +222,71 @@ export function OrderForm({
     setSuccess(null);
   }, [platform]);
 
-  const categories = useMemo<Option[]>(
-    () =>
-      [...new Set(platformServices.map((s) => s.category))].map((c) => ({
-        id: c,
-        label: c,
-      })),
-    [platformServices],
-  );
+  const categories = useMemo<Option[]>(() => {
+    const platformKey = platform.toLowerCase();
+    const list = PLATFORM_CATEGORIES[platformKey] ?? [
+      "Followers",
+      "Likes",
+      "Views",
+      "Comments",
+      "Shares",
+    ];
+
+    // Find any additional categories from DB services that aren't already represented
+    const dbCategories = [...new Set(platformServices.map((s) => s.category).filter(Boolean))];
+    const extraCategories = dbCategories.filter((dbCat) => {
+      const dbLower = dbCat.toLowerCase();
+      return !list.some((c) => {
+        const cLower = c.toLowerCase();
+        const root = cLower.endsWith("s") ? cLower.slice(0, -1) : cLower;
+        return dbLower === cLower || dbLower.includes(root);
+      });
+    });
+
+    return [...list, ...extraCategories].map((c) => ({
+      id: c,
+      label: c,
+    }));
+  }, [platform, platformServices]);
 
   // Fall back to the first category / service until the user picks one.
   const activeCategory = categories.some((c) => c.id === categoryId)
     ? categoryId
     : (categories[0]?.id ?? "");
 
-  const serviceList = useMemo<ServiceItem[]>(
-    () =>
-      platformServices
-        .filter((s) => s.category === activeCategory)
-        .map((s) => ({
-          id: String(s.id),
-          label: s.name,
-          rate: s.rate,
-          min: s.min_qty,
-          max: s.max_qty,
-          platform: s.platform,
-          refill: s.refill ? "Yes" : null,
-          startTime: "-",
-          speed: "-",
-          linkHint: "Link",
-        })),
-    [platformServices, activeCategory],
-  );
+  const serviceList = useMemo<ServiceItem[]>(() => {
+    if (!activeCategory) return [];
+
+    const catLower = activeCategory.toLowerCase();
+    const root = catLower.endsWith("s") ? catLower.slice(0, -1) : catLower;
+
+    const matched = platformServices.filter((s) => {
+      const sCat = (s.category || "").toLowerCase();
+      const sName = (s.name || "").toLowerCase();
+
+      // Direct match
+      if (sCat === catLower) return true;
+      // Partial match on category (e.g. "Instagram Followers", "Instagram Save")
+      if (sCat.includes(catLower) || sCat.includes(root)) return true;
+      // Partial match on name if category didn't match
+      if (sName.includes(catLower) || sName.includes(root)) return true;
+
+      return false;
+    });
+
+    return matched.map((s) => ({
+      id: String(s.id),
+      label: s.name,
+      rate: s.rate,
+      min: s.min_qty,
+      max: s.max_qty,
+      platform: s.platform,
+      refill: s.refill ? "Yes" : null,
+      startTime: "-",
+      speed: "-",
+      linkHint: "Link",
+    }));
+  }, [platformServices, activeCategory]);
 
   const service = serviceList.find((s) => s.id === serviceId) ?? serviceList[0] ?? null;
   const activeServiceId = service?.id ?? "";

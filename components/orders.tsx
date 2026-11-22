@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   LayoutGrid,
   Clock,
@@ -11,6 +11,7 @@ import {
   Ban,
   Search,
 } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 type Status =
   | "pending"
@@ -70,10 +71,59 @@ const pillClass = (active: boolean) =>
 const cols =
   "grid grid-cols-[70px_minmax(160px,2fr)_minmax(140px,2fr)_90px_100px_90px_120px_110px] items-center gap-4 px-5";
 
-export function Orders({ orders = [] }: { orders?: Order[] }) {
-  // TODO: load orders from Supabase and pass them in
+export function Orders({ orders: propOrders }: { orders?: Order[] }) {
+  const [orders, setOrders] = useState<Order[]>(propOrders ?? []);
+  const [loading, setLoading] = useState(!propOrders);
   const [filter, setFilter] = useState<"all" | Status>("all");
   const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    if (propOrders && propOrders.length > 0) {
+      setOrders(propOrders);
+      setLoading(false);
+      return;
+    }
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: authData }) => {
+      const user = authData?.user;
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+      supabase
+        .from("orders")
+        .select(`
+          id,
+          link,
+          charge,
+          quantity,
+          start_count,
+          status,
+          created_at,
+          services ( name )
+        `)
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .then(({ data, error }) => {
+          setLoading(false);
+          if (error || !data) {
+            console.error("Failed to load orders:", error?.message);
+            return;
+          }
+          const mapped: Order[] = data.map((o: any) => ({
+            id: String(o.id),
+            service: o.services?.name ?? `Service #${o.id}`,
+            link: o.link,
+            charge: Number(o.charge ?? 0),
+            startCount: o.start_count ?? 0,
+            quantity: o.quantity,
+            estTime: "1-3 hours",
+            status: (o.status === "in_progress" ? "in-progress" : o.status) as Status,
+          }));
+          setOrders(mapped);
+        });
+    });
+  }, [propOrders]);
 
   const q = query.trim().toLowerCase();
   const visible = orders.filter(
@@ -131,7 +181,12 @@ export function Orders({ orders = [] }: { orders?: Order[] }) {
               <span>Status</span>
             </div>
 
-            {visible.length === 0 ? (
+            {loading ? (
+              <div className="flex h-[320px] flex-col items-center justify-center gap-3">
+                <Loader className="h-7 w-7 text-[#7FFF00] animate-spin" />
+                <p className="text-[13px] text-white/60">Loading your orders...</p>
+              </div>
+            ) : visible.length === 0 ? (
               <div className="flex h-[420px] flex-col items-center justify-center gap-3">
                 <span className="mb-2 flex h-[72px] w-[72px] items-center justify-center rounded-full bg-black">
                   <Search className="h-7 w-7 text-white" strokeWidth={1.75} />

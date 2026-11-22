@@ -9,11 +9,11 @@ import {
 
 export const maxDuration = 60;
 
-type Candidate = { supplier_id: number; supplier_service_id: string };
 type PlaceOrderResult = {
   order_id: number;
   charge: number;
-  candidates: Candidate[];
+  supplier_id: number;
+  supplier_service_id: string;
 };
 
 // Errors raised by the place_order SQL function -> HTTP responses.
@@ -90,64 +90,60 @@ export async function POST(request: Request) {
 
   const placed = data as PlaceOrderResult;
 
-  // 4. Dispatch to suppliers, cheapest first.
-  //    not_sent / rejected -> safe to try the next supplier.
-  //    unknown             -> the supplier MAY have the order, so stop here.
-  let lastError = "no supplier";
-  for (const c of placed.candidates) {
-    try {
-      const supplier = await getSupplier(c.supplier_id);
-      const supplierOrderId = await addOrder(supplier, {
-        serviceId: c.supplier_service_id,
-        link,
-        quantity,
-        extra,
-      });
+  // 4. Dispatch exclusively to the single hardcoded supplier assigned to this service
+  let lastError = "Supplier dispatch failed";
+  try {
+    const supplier = await getSupplier(placed.supplier_id);
+    const supplierOrderId = await addOrder(supplier, {
+      serviceId: placed.supplier_service_id,
+      link,
+      quantity,
+      extra,
+    });
 
-      const { error: updError } = await admin
-        .from("orders")
-        .update({ supplier_id: c.supplier_id, supplier_order_id: supplierOrderId })
-        .eq("id", placed.order_id);
+    const { error: updError } = await admin
+      .from("orders")
+      .update({ supplier_order_id: supplierOrderId, status: "pending" })
+      .eq("id", placed.order_id);
 
-      if (updError) {
-        // The supplier has the order but we failed to record its id. Needs a human.
-        console.error(
-          `[orders] CRITICAL order ${placed.order_id} accepted by supplier ${c.supplier_id} ` +
-            `as #${supplierOrderId} but DB update failed: ${updError.message}`,
-        );
-      }
-
-      return NextResponse.json({
-        success: true,
-        orderId: placed.order_id,
-        charge: placed.charge,
-      });
-    } catch (e) {
-      lastError = errMsg(e);
-
-      if (e instanceof SupplierError && e.kind === "unknown") {
-        // Do not reroute and do not refund: it may have been accepted.
-        await admin
-          .from("orders")
-          .update({ supplier_id: c.supplier_id, error: `unconfirmed: ${lastError}` })
-          .eq("id", placed.order_id);
-        console.error(`[orders] order ${placed.order_id} unconfirmed at supplier ${c.supplier_id}:`, lastError);
-        return NextResponse.json(
-          {
-            success: true,
-            orderId: placed.order_id,
-            charge: placed.charge,
-            warning: "Your order is being confirmed with our provider.",
-          },
-          { status: 202 },
-        );
-      }
-
-      console.warn(`[orders] supplier ${c.supplier_id} failed (${lastError}), trying next`);
+    if (updError) {
+      console.error(
+        `[orders] CRITICAL order ${placed.order_id} accepted by supplier ${placed.supplier_id} ` +
+          `as #${supplierOrderId} but DB update failed: ${updError.message}`,
+      );
     }
+
+    return NextResponse.json({
+      success: true,
+      orderId: placed.order_id,
+      charge: placed.charge,
+    });
+  } catch (e) {
+    lastError = errMsg(e);
+
+    if (e instanceof SupplierError && e.kind === "unknown") {
+      // Network timeout / unconfirmed: leave order unconfirmed for status checker, do not refund or retry
+      await admin
+        .from("orders")
+        .update({ error: `unconfirmed: ${lastError}` })
+        .eq("id", placed.order_id);
+      console.error(`[orders] order ${placed.order_id} unconfirmed at supplier ${placed.supplier_id}:`, lastError);
+      return NextResponse.json(
+        {
+          success: true,
+          orderId: placed.order_id,
+          charge: placed.charge,
+          warning: "Your order is being confirmed with our provider.",
+        },
+        { status: 202 },
+      );
+    }
+
+    // Definitive rejection (not_sent / rejected): cancel and refund immediately
+    console.warn(`[orders] supplier ${placed.supplier_id} definitively rejected order ${placed.order_id} (${lastError}). Refunding.`);
   }
 
-  // 5. Every supplier refused or was unreachable before sending: cancel and refund.
+  // 5. Single supplier rejected or unreachable: cancel and refund via finalize_order
   const { error: refundError } = await admin.rpc("finalize_order", {
     p_order: placed.order_id,
     p_status: "canceled",

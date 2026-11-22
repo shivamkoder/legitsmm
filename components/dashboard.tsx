@@ -136,11 +136,10 @@ export function SidebarNav({
   );
 }
 
-function HeaderActions({ onSelect }: { onSelect: (id: string) => void }) {
+function HeaderActions({ onSelect, balance = 0 }: { onSelect: (id: string) => void; balance?: number }) {
   const [open, setOpen] = useState<"wallet" | "profile" | null>(null);
   const [email, setEmail] = useState("");
   const ref = useRef<HTMLDivElement>(null);
-  const balance = 0; // replace with real balance from Supabase later
 
   useEffect(() => {
     createClient()
@@ -157,6 +156,7 @@ function HeaderActions({ onSelect }: { onSelect: (id: string) => void }) {
   }, []);
 
   const initial = email ? email[0].toUpperCase() : "U";
+  const formattedBalance = Number(balance).toFixed(2);
   const menuClass =
     "absolute right-0 top-full mt-2 w-56 rounded-xl border border-[#7FFF00]/20 bg-[#050a02] p-2 shadow-lg z-50";
 
@@ -174,7 +174,7 @@ function HeaderActions({ onSelect }: { onSelect: (id: string) => void }) {
             <Wallet className="h-4 w-4 text-[#7FFF00]" strokeWidth={1.5} />
           </span>
           <span className="text-sm font-medium text-[#7FFF00]">
-            ${balance}
+            ${formattedBalance}
           </span>
           <ChevronDown className="h-4 w-4 text-[#7FFF00]/60" />
         </button>
@@ -183,7 +183,7 @@ function HeaderActions({ onSelect }: { onSelect: (id: string) => void }) {
           <div className={menuClass}>
             <div className="px-2 py-2">
               <p className="text-xs text-[#7FFF00]/60">Balance</p>
-              <p className="text-lg font-semibold text-[#7FFF00]">${balance}</p>
+              <p className="text-lg font-semibold text-[#7FFF00]">${formattedBalance}</p>
             </div>
             <button
               type="button"
@@ -244,7 +244,44 @@ export default function SidebarNavPreview() {
   // Start on Instagram: there is no "All" option anymore.
   const [platform, setPlatform] = useState("instagram");
   const [selectedService, setSelectedService] = useState<ServiceItem | null>(null);
+  const [userProfile, setUserProfile] = useState<{
+    balance: number;
+    total_spent: number;
+    points: number;
+    status: string;
+    referral_code: string;
+  }>({
+    balance: 0,
+    total_spent: 0,
+    points: 0,
+    status: "New",
+    referral_code: "",
+  });
   const router = useRouter();
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: authData }) => {
+      const user = authData?.user;
+      if (!user) return;
+      supabase
+        .from("profiles")
+        .select("balance, total_spent, points, status, referral_code")
+        .eq("id", user.id)
+        .single()
+        .then(({ data: profile }) => {
+          if (profile) {
+            setUserProfile({
+              balance: Number(profile.balance ?? 0),
+              total_spent: Number(profile.total_spent ?? 0),
+              points: Number(profile.points ?? 0),
+              status: profile.status ?? "New",
+              referral_code: profile.referral_code ?? "",
+            });
+          }
+        });
+    });
+  }, []);
 
   const activeTitle =
     navItems.find((i) => i.id === activeId)?.title ?? "Dashboard";
@@ -295,7 +332,7 @@ export default function SidebarNavPreview() {
               </span>
             </div>
 
-            <HeaderActions onSelect={handleSelect} />
+            <HeaderActions onSelect={handleSelect} balance={userProfile.balance} />
           </div>
 
           {/* Page content */}
@@ -303,7 +340,13 @@ export default function SidebarNavPreview() {
             {activeId === "new-order" ? (
               <>
                 <div className="mb-6">
-                  <StatsCard onNavigate={handleSelect} />
+                  <StatsCard
+                    balance={userProfile.balance}
+                    spent={userProfile.total_spent}
+                    points={userProfile.points}
+                    status={userProfile.status}
+                    onNavigate={handleSelect}
+                  />
                 </div>
 
                 <div className="mb-6">
@@ -329,7 +372,7 @@ export default function SidebarNavPreview() {
             ) : activeId === "services" ? (
               <Services onNavigate={handleSelect} />
             ) : activeId === "affiliates" ? (
-              <Affiliates />
+              <Affiliates code={userProfile.referral_code || undefined} />
             ) : activeId === "tickets" ? (
               <Tickets />
             ) : (

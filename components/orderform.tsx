@@ -209,7 +209,7 @@ export function OrderForm({
 
   // Only the services of the platform picked above the form.
   const platformServices = useMemo(
-    () => services.filter((s) => s.platform === platform),
+    () => services.filter((s) => s.platform.toLowerCase() === platform.toLowerCase()),
     [services, platform],
   );
 

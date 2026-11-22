@@ -4,5 +4,9 @@ const KEYS: Record<string, string> = {
 };
 
 export function resolveSupplierKey(envName: string): string | null {
-  return KEYS[envName] ?? null;
+  const envVal = typeof process !== "undefined" && process.env ? process.env[envName] : undefined;
+  if (envVal && envVal.trim()) return envVal.trim();
+  const staticVal = KEYS[envName];
+  if (staticVal && staticVal.trim()) return staticVal.trim();
+  return null;
 }

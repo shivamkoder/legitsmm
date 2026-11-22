@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>LegitSMM: Platform Structure & End-to-End Working</title>
+<style>
+  @page {
+    size: A4 portrait;
+    margin: 14mm 16mm 14mm 16mm;
+  }
+  * {
+    box-sizing: border-box;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #1e293b;
+    background: #ffffff;
+    margin: 0;
+    padding: 0;
+    font-size: 11.5px;
+    line-height: 1.5;
+  }
+  .page {
+    width: 100%;
+    height: 269mm; /* Exact printable height on A4 */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    page-break-after: always;
+    page-break-inside: avoid;
+    overflow: hidden;
+  }
+  .page:last-child {
+    page-break-after: avoid;
+  }
+  .content {
+    flex: 1;
+  }
+  
+  /* Header Styles */
+  .doc-kicker {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #0d9488;
+    margin-bottom: 4px;
+  }
+  h1.doc-title {
+    font-size: 21px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 6px 0;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+  .doc-subtitle {
+    font-size: 11.5px;
+    color: #475569;
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+  }
+  .header-divider {
+    border: none;
+    border-top: 1px solid #cbd5e1;
+    margin: 0 0 12px 0;
+  }
+  .lead-p {
+    font-size: 11px;
+    color: #334155;
+    margin-bottom: 14px;
+    line-height: 1.55;
+    text-align: justify;
+  }
+
+  /* Section Headings */
+  h2.section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 8px 0;
+    letter-spacing: -0.01em;
+  }
+  h3.phase-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #0f766e;
+    margin: 10px 0 6px 0;
+  }
+  .section-intro {
+    font-size: 11px;
+    color: #475569;
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+
+  /* Tables */
+  table.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 12px;
+    font-size: 10.5px;
+  }
+  table.data-table th {
+    background-color: #0f172a;
+    color: #ffffff;
+    font-weight: 600;
+    text-align: left;
+    padding: 7px 10px;
+    font-size: 10px;
+    letter-spacing: 0.02em;
+  }
+  table.data-table td {
+    padding: 7px 10px;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: top;
+    line-height: 1.45;
+  }
+  table.data-table tr:nth-child(even) td {
+    background-color: #f8fafc;
+  }
+
+  /* Badges */
+  .badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 9.5px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .badge-deployed { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+  .badge-active { background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+  .badge-hardened { background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+  .badge-dynamic { background-color: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; }
+  .badge-roadmap { background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+
+  /* Code elements */
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 9.5px;
+    background-color: #f1f5f9;
+    padding: 1px 4px;
+    border-radius: 3px;
+    color: #0f172a;
+    border: 1px solid #e2e8f0;
+  }
+
+  /* Lists */
+  ol.step-list {
+    margin: 0 0 10px 0;
+    padding-left: 18px;
+  }
+  ol.step-list li {
+    margin-bottom: 7px;
+    font-size: 11px;
+    line-height: 1.5;
+    color: #334155;
+  }
+  ol.step-list li strong {
+    color: #0f172a;
+  }
+  ul.arch-list {
+    margin: 0 0 10px 0;
+    padding-left: 16px;
+  }
+  ul.arch-list li {
+    margin-bottom: 7px;
+    font-size: 11px;
+    line-height: 1.5;
+    color: #334155;
+  }
+  ul.arch-list li strong {
+    color: #0f172a;
+  }
+
+  /* Callout box */
+  .callout-box {
+    background-color: #f0fdfa;
+    border-left: 4px solid #0d9488;
+    padding: 10px 14px;
+    border-radius: 0 4px 4px 0;
+    font-size: 10.5px;
+    line-height: 1.5;
+    color: #134e4a;
+    margin-top: 10px;
+  }
+  .callout-box strong {
+    color: #0f766e;
+  }
+
+  /* Footer */
+  .doc-footer {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 6px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    color: #94a3b8;
+    letter-spacing: 0.02em;
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= PAGE 1 ================= -->
+<div class="page">
+  <div class="content">
+    <div class="doc-kicker">SYSTEM ARCHITECTURE & ENGINEERING SPECIFICATION</div>
+    <h1 class="doc-title">LegitSMM: Platform Structure & End-to-End Working</h1>
+    <div class="doc-subtitle">Decoupled Serverless Architecture, Dynamic Multi-Supplier Failover (MoreThanPanel & NiceSMM), and Atomic Data Flow</div>
+    <hr class="header-divider">
+
+    <p class="lead-p">
+      <strong>LegitSMM</strong> is a custom-engineered, automated Social Media Marketing (SMM) reseller platform built to deliver high-retention, non-drop engagement services across YouTube, Instagram, TikTok, Telegram, and other major networks. Rather than relying on monolithic rented scripts or fragile client-side pricing, the platform separates customer-facing Next.js interfaces from asynchronous serverless automation. It enforces double-spend race prevention through PostgreSQL row-level locks, implements automatic multi-supplier failover routing, and verifies non-custodial crypto top-ups directly on-chain, keeping infrastructure overhead near $0/month while scaling seamlessly.
+    </p>
+
+    <h2 class="section-title">1. Platform Infrastructure Stack</h2>
+    <div class="section-intro">
+      Because serverless edge functions enforce strict execution timeouts and statelessness, LegitSMM decouples state persistence, catalog caching, queuing, and fulfillment across specialized cloud services:
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width: 22%;">Architectural Layer</th>
+          <th style="width: 28%;">Technology / Provider</th>
+          <th style="width: 50%;">Core Responsibility</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Frontend & API Gateway</strong></td>
+          <td>Next.js 15 (App Router) on Vercel</td>
+          <td>Renders storefront, dashboard, and <code>OrderForm</code> UI; exposes secure serverless API endpoints (<code>/api/orders</code>, <code>/api/jobs/*</code>, <code>/api/wallet/*</code>).</td>
+        </tr>
+        <tr>
+          <td><strong>Telegram Channel</strong></td>
+          <td>Telegram Bot / Mini App<br><em>(Roadmap)</em></td>
+          <td>Planned mobile interface (<code>@LegitSMM_bot</code>) connecting directly to authenticated backend endpoints for in-app Telegram ordering.</td>
+        </tr>
+        <tr>
+          <td><strong>Primary Database & Concurrency</strong></td>
+          <td>Supabase (PostgreSQL 17 + PgBouncer)</td>
+          <td>Single source of truth for user profiles, wallet balances, orders, and multi-supplier catalogs. Executes row-level locks (<code>FOR UPDATE</code>) in atomic RPC procedures.</td>
+        </tr>
+        <tr>
+          <td><strong>Background Workers & Queues</strong></td>
+          <td>Upstash QStash<br>(Serverless Queue)</td>
+          <td>Triggers cryptographically signed webhook jobs (<code>/api/jobs/sync-catalog</code>, <code>/api/jobs/checkstatus</code>) to bypass serverless execution limits without long-lived servers.</td>
+        </tr>
+        <tr>
+          <td><strong>Payments & Treasury Rails</strong></td>
+          <td>Direct Web3 On-Chain<br>(Polygon & BSC / Viem)</td>
+          <td>Non-custodial EVM wallet linking (EIP-191/ERC-1271 signatures) and automated on-chain USDT/USDC receipt verification directly to the treasury wallet.</td>
+        </tr>
+        <tr>
+          <td><strong>Upstream Wholesale Suppliers</strong></td>
+          <td>MoreThanPanel & NiceSMM</td>
+          <td>Wholesale fulfillment engines accessed via standardized SMM v2 form-encoded POST APIs (<code>services</code>, <code>add</code>, <code>status</code>, <code>balance</code>).</td>
+        </tr>
+        <tr>
+          <td><strong>Edge Security & Delivery</strong></td>
+          <td>Cloudflare & Vercel Edge</td>
+          <td>Provides global Anycast DNS, automated SSL/TLS encryption, and Layer 7 DDoS mitigation against malicious scraping and bot attacks.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="doc-footer">
+    <span>LegitSMM — Platform Architecture & System Workflow</span>
+    <span>Page 1 of 4</span>
+  </div>
+</div>
+
+<!-- ================= PAGE 2 ================= -->
+<div class="page">
+  <div class="content">
+    <h2 class="section-title">2. Current Build Status & Implementation Progress</h2>
+    <div class="section-intro">
+      Development of LegitSMM has advanced through production schema deployment, atomic SQL procedure hardening, client component wiring, and automated background jobs:
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width: 24%;">System Component</th>
+          <th style="width: 22%;">Current Status</th>
+          <th style="width: 54%;">Technical Details & Active Capabilities</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Supabase PostgreSQL Schema</strong></td>
+          <td><span class="badge badge-deployed">Deployed & Active</span></td>
+          <td>Relational tables (<code>profiles</code>, <code>services</code>, <code>service_suppliers</code>, <code>supplier_catalog</code>, <code>suppliers</code>, <code>orders</code>, <code>transactions</code>, <code>crypto_deposits</code>, <code>wallet_links</code>) with strict numeric constraints.</td>
+        </tr>
+        <tr>
+          <td><strong>Frontend OrderForm UI</strong></td>
+          <td><span class="badge badge-active">Built & Wired</span></td>
+          <td>Client component dynamically queries active services via <code>useServices()</code>, computes live costs, filters by platform/category, and submits validated payloads.</td>
+        </tr>
+        <tr>
+          <td><strong>Atomic Order Placement API</strong></td>
+          <td><span class="badge badge-deployed">Deployed & Hardened</span></td>
+          <td><code>/api/orders/route.ts</code> invokes <code>place_order</code> RPC. Locks user row (<code>FOR UPDATE</code>), deducts balance, and sequentially dispatches through candidate suppliers.</td>
+        </tr>
+        <tr>
+          <td><strong>Dynamic Multi-Supplier Failover</strong></td>
+          <td><span class="badge badge-dynamic">Implemented</span></td>
+          <td>Relational routing via <code>service_suppliers</code> sorted by <code>cost_rate ASC</code>. Automatically attempts alternate suppliers if the primary is rejected or down.</td>
+        </tr>
+        <tr>
+          <td><strong>Catalog Sync Worker</strong></td>
+          <td><span class="badge badge-active">Built & Ingesting</span></td>
+          <td><code>/api/jobs/sync-catalog/route.ts</code> verifies QStash signatures, pulls supplier catalogs, upserts <code>supplier_catalog</code> (6,592+ items), detects price spikes, and updates margins.</td>
+        </tr>
+        <tr>
+          <td><strong>Status Poller & Auto-Refunds</strong></td>
+          <td><span class="badge badge-deployed">Deployed & Active</span></td>
+          <td><code>/api/jobs/checkstatus/route.ts</code> batches status calls in chunks of 100. Calls <code>finalize_order</code> for completed/partial/canceled orders with automated ledger refunds.</td>
+        </tr>
+        <tr>
+          <td><strong>Web3 On-Chain Payments</strong></td>
+          <td><span class="badge badge-deployed">Deployed & Active</span></td>
+          <td><code>/api/wallet/link</code> validates cryptographic ownership; <code>/api/payments/verifyweb3</code> verifies on-chain receipts on Polygon & BSC with atomic <code>credit_crypto_deposit</code>.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 class="section-title">3. Database Ledger Architecture</h2>
+    <div class="section-intro">
+      Every financial movement, upstream catalog item, and fulfillment state is recorded in Supabase PostgreSQL:
+    </div>
+
+    <ul class="arch-list">
+      <li>
+        <strong><code>profiles</code> Table:</strong> Stores user identity (UUID linked to <code>auth.users</code>), email, high-precision numeric <code>balance</code>, <code>total_spent</code>, <code>points</code>, referral tracking, and auto-generated reseller API key hashes (<code>api_key_hash</code>).
+      </li>
+      <li>
+        <strong><code>services</code> Table:</strong> Contains platform-curated customer-facing offerings with retail <code>rate</code>, min/max bounds, platform category, and quality guarantees. Decoupled from upstream vendor identifiers.
+      </li>
+      <li>
+        <strong><code>service_suppliers</code> Table:</strong> Many-to-many routing ledger linking <code>service_id</code> to one or more <code>supplier_id</code> and <code>supplier_service_id</code> entries, storing wholesale <code>cost_rate</code>, priority, and sync availability for automatic failover.
+      </li>
+      <li>
+        <strong><code>supplier_catalog</code> Table:</strong> Live mirror of raw vendor catalogs (NiceSMM & MoreThanPanel) with 6,592+ synced services, tracking wholesale price adjustments and supplier-level availability.
+      </li>
+      <li>
+        <strong><code>orders</code> Table:</strong> Audits order lifecycles (<code>user_id</code>, <code>service_id</code>, target <code>link</code>, <code>quantity</code>, calculated <code>charge</code>, active <code>supplier_id</code>, <code>supplier_order_id</code>, <code>tried_suppliers</code> array, start counts, remains, and final status).
+      </li>
+      <li>
+        <strong><code>transactions</code> & <code>crypto_deposits</code> Tables:</strong> Double-entry financial audit trail enforcing unique idempotency keys and on-chain transaction hashes (<code>tx_hash</code>) to prevent replay attacks and duplicate balance credits.
+      </li>
+    </ul>
+  </div>
+  <div class="doc-footer">
+    <span>LegitSMM — Platform Architecture & System Workflow</span>
+    <span>Page 2 of 4</span>
+  </div>
+</div>
+
+<!-- ================= PAGE 3 ================= -->
+<div class="page">
+  <div class="content">
+    <h2 class="section-title">4. How Background Workers Connect with the Frontend</h2>
+    <div class="section-intro">
+      The frontend never communicates directly with wholesale suppliers. The Supabase database serves as an ACID-compliant bridge between background workers and user-facing Next.js components:
+    </div>
+
+    <h3 class="phase-title">Phase A: Background Catalog Syncing → Dynamic Pricing & Catalog Population</h3>
+    <ol class="step-list">
+      <li>
+        <strong>Scheduled Trigger:</strong> Upstash QStash dispatches an authenticated HTTP POST request to <code>/api/jobs/sync-catalog</code>. The endpoint verifies cryptographic integrity via <code>verifyQStash(req)</code> to block unauthorized triggers.
+      </li>
+      <li>
+        <strong>Admin Database Access:</strong> Initializing <code>createAdminClient()</code> with <code>SUPABASE_SERVICE_ROLE_KEY</code>, the job bypasses Row Level Security to read enabled providers from the <code>suppliers</code> table.
+      </li>
+      <li>
+        <strong>Catalog Ingestion & Margin Calculation:</strong> The worker invokes <code>getServices()</code> on MoreThanPanel and NiceSMM APIs, filters invalid items, and executes the atomic <code>apply_catalog_sync</code> SQL procedure. The procedure upserts <code>supplier_catalog</code>, disables dropped services, checks for sudden price spikes (&gt;15%), and automatically recalculates retail rates based on the configured markup (e.g., 21%).
+      </li>
+      <li>
+        <strong>Frontend Rendering:</strong> When a user navigates to the storefront, the <code>useServices()</code> hook queries active rows from the <code>services</code> table. React <code>useMemo</code> hooks partition offerings by platform, extract categories, and populate the dynamic <code>OrderForm</code> with real-time limits and rates.
+      </li>
+    </ol>
+
+    <h3 class="phase-title">Phase B: Frontend Order Submission → Atomic Dispatch & Failover</h3>
+    <ol class="step-list">
+      <li>
+        <strong>Client Validation:</strong> The customer configures a service, enters the target link and desired quantity, and submits the form. The frontend computes an indicative quote and dispatches <code>{ serviceId, link, quantity, extra }</code> to <code>POST /api/orders</code>.
+      </li>
+      <li>
+        <strong>Database Concurrency Lock:</strong> The server retrieves the verified <code>userId</code> from session claims. It invokes the atomic PostgreSQL function <code>place_order</code>, which executes an exclusive row-level lock (<code>SELECT ... FOR UPDATE</code>) on <code>profiles</code>, validates funds against authoritative DB rates, deducts the charge, creates a pending order, and returns active candidate suppliers sorted by cost (cheapest first).
+      </li>
+      <li>
+        <strong>Dynamic Supplier Dispatch & Failover:</strong> The backend iterates through the candidate list. It formats a standardized SMM v2 form-encoded <code>action=add</code> request using the selected supplier's API key. If the primary supplier rejects or errors, the router automatically attempts the next candidate supplier without double-billing.
+      </li>
+      <li>
+        <strong>Ledger Commitment:</strong> Upon successful acceptance, the backend updates the order record with the returned <code>supplier_order_id</code> and returns confirmation to the UI. If every candidate fails, <code>finalize_order</code> is triggered to instantly cancel the order and issue a full automated refund.
+      </li>
+    </ol>
+  </div>
+  <div class="doc-footer">
+    <span>LegitSMM — Platform Architecture & System Workflow</span>
+    <span>Page 3 of 4</span>
+  </div>
+</div>
+
+<!-- ================= PAGE 4 ================= -->
+<div class="page">
+  <div class="content">
+    <h3 class="phase-title" style="margin-top: 0;">Phase C: Background Status Polling & Automated Refunds</h3>
+    <ol class="step-list">
+      <li>
+        <strong>Scheduled Batch Polling:</strong> Upstash QStash triggers recurring POST requests to <code>/api/jobs/checkstatus</code> with signature verification, eliminating serverless execution timeouts.
+      </li>
+      <li>
+        <strong>Aggregated Supplier Querying:</strong> The worker identifies all active non-final orders (<code>pending</code>, <code>processing</code>, <code>in_progress</code>), aggregates them by <code>supplier_id</code>, and queries live statuses in efficient chunks of 100 via wholesale <code>action=status</code> endpoints.
+      </li>
+      <li>
+        <strong>Automated Ledger Reconciliation & Refunds:</strong> Returned statuses are mapped into standard lifecycle states. When an order concludes as <code>completed</code>, the record is closed. If marked <code>canceled</code> or <code>partial</code>, the worker executes the database RPC <code>finalize_order</code>, which calculates the exact undelivered ratio from <code>remains</code> and immediately credits an automated refund back to the user's wallet via <code>apply_transaction('order_refund')</code>.
+      </li>
+    </ol>
+
+    <h2 class="section-title">5. Upstream Service Mapping & Curated Bundles</h2>
+    <div class="section-intro">
+      Services are ingested into <code>supplier_catalog</code> and curated into the retail catalog via <code>service_suppliers</code>. Below is the active service specification mapped to MoreThanPanel and NiceSMM endpoints:
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width: 14%;">Service ID</th>
+          <th style="width: 25%;">Target Category</th>
+          <th style="width: 47%;">Service Specification & Guarantees</th>
+          <th style="width: 14%;">Wholesale Rate</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>#2523</code></td>
+          <td>Instagram Elite Services</td>
+          <td>Instagram Views | 30 Day Refill | Speed: 10–100K/Day | Max: 1M | High Retention Accounts</td>
+          <td>$0.03 / 1K</td>
+        </tr>
+        <tr>
+          <td><code>#2505</code></td>
+          <td>Instagram Reels</td>
+          <td>Instagram Reel Views | Lifetime Guaranteed | Speed: 10–100K/Day | Max: 1M | Direct Reels Links</td>
+          <td>$0.04 / 1K</td>
+        </tr>
+        <tr>
+          <td><code>#9884</code></td>
+          <td>Instagram Saves</td>
+          <td>Instagram Saves | High Speed: 50–100K/Day | Max: 200K | Non-Drop Organic Multiplier</td>
+          <td>$0.14 / 1K</td>
+        </tr>
+        <tr>
+          <td><code>#5208</code></td>
+          <td>Instagram Reach / Impressions</td>
+          <td>Instagram Shares + Engagement + Reach + Impression Boost | Max: 100K</td>
+          <td>$0.11 / 1K</td>
+        </tr>
+        <tr>
+          <td><code>#10072</code></td>
+          <td>Instagram Reposts</td>
+          <td>Instagram Repost | 30 Day Refill | Speed: 500–1K/Day | Max: 500K</td>
+          <td>$0.53 / 1K</td>
+        </tr>
+        <tr>
+          <td><code>#2960</code></td>
+          <td>Instagram Shares</td>
+          <td>Instagram Shares | Max: 500K | Post Links | High Velocity Direct Ingestion</td>
+          <td>$0.04 / 1K</td>
+        </tr>
+        <tr>
+          <td><code>#2499</code></td>
+          <td>Instagram Likes</td>
+          <td>Instagram Likes | 30 Day Refill | Speed: 5–50K/Day | Max: 5M Quality Node</td>
+          <td>$0.12 / 1K</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout-box">
+      <strong>Operational Treasury & Web3 Payment Architecture:</strong> Customer wallet top-ups are processed through non-custodial EVM rails on <strong>Polygon</strong> and <strong>BNB Smart Chain</strong> supporting <strong>USDT</strong> and <strong>USDC</strong>. Users link their wallet via cryptographic signature verification (<code>/api/wallet/link</code>); on-chain transfers are verified directly against node RPC receipts (<code>/api/payments/verifyweb3</code>) after required block confirmations (30 on Polygon, 15 on BSC) before calling <code>credit_crypto_deposit</code>. Consolidated funds in the central treasury are periodically drawn to pre-fund wholesale API balances on MoreThanPanel and NiceSMM to maintain uninterrupted automated order execution.
+    </div>
+  </div>
+  <div class="doc-footer">
+    <span>LegitSMM — Platform Architecture & System Workflow</span>
+    <span>Page 4 of 4</span>
+  </div>
+</div>
+
+</body>
+</html>

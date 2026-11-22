@@ -13,6 +13,9 @@ export type DbService = {
   min_qty: number;
   max_qty: number;
   refill: boolean;
+  start_time?: string | null;
+  speed?: string | null;
+  link_hint?: string | null;
 };
 
 // Supabase returns at most 1000 rows per request, so page through.
@@ -22,13 +25,18 @@ export async function fetchServices(): Promise<DbService[]> {
   for (let from = 0; ; from += 1000) {
     const { data, error } = await supabase
       .from("services")
-      .select("id, platform, category, name, type, rate, min_qty, max_qty, refill")
+      .select("id, platform, category, name, type, rate, min_qty, max_qty, refill, start_time, speed, link_hint")
       .eq("is_active", true)
-      .order("category")
-      .order("rate")
+      .order("id")
       .range(from, from + 999);
     if (error) throw new Error(error.message);
-    all.push(...((data ?? []) as DbService[]));
+    const mapped = (data ?? []).map((s: any) => ({
+      ...s,
+      rate: Number(s.rate) || 0,
+      min_qty: Number(s.min_qty ?? 1),
+      max_qty: Number(s.max_qty ?? 1000000),
+    }));
+    all.push(...mapped);
     if (!data || data.length < 1000) break;
   }
   return all;

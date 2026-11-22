@@ -199,7 +199,7 @@ export function OrderForm({
 }) {
   const { services, loading: loadingServices, error: servicesError } = useServices();
 
-  const [categoryId, setCategoryId] = useState("");
+  const [categoryId, setCategoryId] = useState("all");
   const [serviceId, setServiceId] = useState("");
   const [link, setLink] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -213,9 +213,9 @@ export function OrderForm({
     [services, platform],
   );
 
-  // Start fresh whenever the user switches platform.
+  // Reset when platform changes
   useEffect(() => {
-    setCategoryId("");
+    setCategoryId("all");
     setServiceId("");
     setQuantity("");
     setFormError(null);
@@ -243,53 +243,104 @@ export function OrderForm({
       });
     });
 
-    return [...list, ...extraCategories].map((c) => ({
-      id: c,
-      label: c,
-    }));
+    return [
+      { id: "all", label: "All Categories" },
+      ...list.map((c) => ({ id: c, label: c })),
+      ...extraCategories.map((c) => ({ id: c, label: c })),
+    ];
   }, [platform, platformServices]);
 
-  // Fall back to the first category / service until the user picks one.
-  const activeCategory = categories.some((c) => c.id === categoryId)
-    ? categoryId
-    : (categories[0]?.id ?? "");
+  const activeCategory = categoryId || "all";
+
+  // Compute counts per category
+  const categoryCounts = useMemo<Record<string, number>>(() => {
+    const counts: Record<string, number> = {
+      all: platformServices.length,
+    };
+    for (const c of categories) {
+      if (c.id === "all") continue;
+      const catLower = c.id.toLowerCase();
+      const root = catLower.endsWith("s") ? catLower.slice(0, -1) : catLower;
+      const cnt = platformServices.filter((s) => {
+        const sCat = (s.category || "").toLowerCase();
+        const sName = (s.name || "").toLowerCase();
+        return (
+          sCat === catLower ||
+          sCat.includes(catLower) ||
+          sCat.includes(root) ||
+          sName.includes(catLower) ||
+          sName.includes(root)
+        );
+      }).length;
+      counts[c.id] = cnt;
+    }
+    return counts;
+  }, [categories, platformServices]);
 
   const serviceList = useMemo<ServiceItem[]>(() => {
-    if (!activeCategory) return [];
+    if (platformServices.length === 0) return [];
 
-    const catLower = activeCategory.toLowerCase();
-    const root = catLower.endsWith("s") ? catLower.slice(0, -1) : catLower;
+    let matched = platformServices;
 
-    const matched = platformServices.filter((s) => {
-      const sCat = (s.category || "").toLowerCase();
-      const sName = (s.name || "").toLowerCase();
+    if (activeCategory !== "all") {
+      const catLower = activeCategory.toLowerCase();
+      const root = catLower.endsWith("s") ? catLower.slice(0, -1) : catLower;
 
-      // Direct match
-      if (sCat === catLower) return true;
-      // Partial match on category (e.g. "Instagram Followers", "Instagram Save")
-      if (sCat.includes(catLower) || sCat.includes(root)) return true;
-      // Partial match on name if category didn't match
-      if (sName.includes(catLower) || sName.includes(root)) return true;
+      matched = platformServices.filter((s) => {
+        const sCat = (s.category || "").toLowerCase();
+        const sName = (s.name || "").toLowerCase();
 
-      return false;
+        return (
+          sCat === catLower ||
+          sCat.includes(catLower) ||
+          sCat.includes(root) ||
+          sName.includes(catLower) ||
+          sName.includes(root)
+        );
+      });
+    }
+
+    // Curated preferred order for services: 9052, 8702, 9035, 6508, 7403, 9033
+    const preferredOrder = ["9052", "8702", "9035", "6508", "7403", "9033"];
+    const sorted = [...matched].sort((a, b) => {
+      const aIdx = preferredOrder.indexOf(String(a.id));
+      const bIdx = preferredOrder.indexOf(String(b.id));
+      if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+      if (aIdx !== -1) return -1;
+      if (bIdx !== -1) return 1;
+      return a.id - b.id;
     });
 
-    return matched.map((s) => ({
+    return sorted.map((s) => ({
       id: String(s.id),
       label: s.name,
-      rate: s.rate,
-      min: s.min_qty,
-      max: s.max_qty,
+      rate: Number(s.rate),
+      min: Number(s.min_qty),
+      max: Number(s.max_qty),
       platform: s.platform,
       refill: s.refill ? "Yes" : null,
-      startTime: "-",
-      speed: "-",
-      linkHint: "Link",
+      startTime: s.start_time ?? "Instant",
+      speed: s.speed ?? "10K - 100K/Day",
+      linkHint: s.link_hint ?? "Instagram Profile / Post link",
     }));
   }, [platformServices, activeCategory]);
 
+  // Auto-select the first service in the list if none selected or current is invalid
+  useEffect(() => {
+    if (serviceList.length > 0 && (!serviceId || !serviceList.some((s) => s.id === serviceId))) {
+      setServiceId(serviceList[0].id);
+    }
+  }, [serviceList, serviceId]);
+
   const service = serviceList.find((s) => s.id === serviceId) ?? serviceList[0] ?? null;
   const activeServiceId = service?.id ?? "";
+
+  // Auto-fill minimum quantity when a service is selected
+  useEffect(() => {
+    if (service && (!quantity || Number(quantity) < service.min)) {
+      setQuantity(String(service.min));
+    }
+  }, [service?.id]);
 
   // Tell the parent which service is selected so the details panel can update.
   useEffect(() => {
@@ -299,17 +350,19 @@ export function OrderForm({
   const handleCategory = (id: string) => {
     setCategoryId(id);
     setServiceId("");
-    setQuantity("");
     setFormError(null);
   };
 
   const qty = Number(quantity) || 0;
   const charge = service ? (qty / 1000) * service.rate : 0;
+  const formattedCharge = qty > 0 ? `$${charge.toFixed(4)}` : "";
 
   const step = 100;
   const adjust = (delta: number) => {
-    const next = Math.max(service?.min ?? 0, qty + delta);
-    setQuantity(String(Math.min(next, service?.max ?? next)));
+    if (!service) return;
+    const currentQty = Number(quantity) || service.min;
+    const next = Math.max(service.min, currentQty + delta);
+    setQuantity(String(Math.min(next, service.max)));
   };
 
   const submitOrder = async () => {
@@ -373,6 +426,22 @@ export function OrderForm({
           value={activeCategory}
           options={categories}
           onChange={handleCategory}
+          renderLabel={(o) => (
+            <span className="flex items-center justify-between w-full">
+              <span>{o.label}</span>
+              {categoryCounts[o.id] !== undefined && (
+                <span
+                  className={`text-[11px] rounded-full px-2 py-0.5 font-medium ${
+                    categoryCounts[o.id] > 0
+                      ? "bg-[#7FFF00]/15 text-[#7FFF00]"
+                      : "bg-white/10 text-white/40"
+                  }`}
+                >
+                  {categoryCounts[o.id]}
+                </span>
+              )}
+            </span>
+          )}
         />
       </div>
 
@@ -386,14 +455,23 @@ export function OrderForm({
             setServiceId(id);
             setFormError(null);
           }}
-          renderLabel={(o) => (
-            <span className="flex items-center gap-2">
-              <span className="shrink-0 rounded-full bg-[#7FFF00]/20 px-2 py-0.5 text-[11px] font-semibold text-[#7FFF00]">
-                {o.id}
+          renderLabel={(o) => {
+            const item = o as ServiceItem;
+            if (item.rate === undefined) return <span>{item.label}</span>;
+            return (
+              <span className="flex items-center justify-between gap-3 w-full">
+                <span className="flex items-center gap-2 min-w-0 truncate">
+                  <span className="shrink-0 rounded-full bg-[#7FFF00]/20 px-2 py-0.5 text-[11px] font-semibold text-[#7FFF00]">
+                    #{item.id}
+                  </span>
+                  <span className="truncate">{item.label}</span>
+                </span>
+                <span className="shrink-0 text-xs font-semibold text-[#7FFF00]">
+                  ${item.rate.toFixed(4)} / 1k
+                </span>
               </span>
-              <span className="truncate">- {o.label}</span>
-            </span>
-          )}
+            );
+          }}
         />
       </div>
 
@@ -458,8 +536,8 @@ export function OrderForm({
           <input
             type="text"
             readOnly
-            value={qty > 0 ? `$${charge.toFixed(2)}` : ""}
-            className="w-full bg-transparent outline-none"
+            value={formattedCharge}
+            className="w-full bg-transparent outline-none font-semibold text-[#7FFF00]"
           />
         </div>
       </div>

@@ -43,7 +43,7 @@ export function ServiceDetails({ service }: { service: ServiceItem | null }) {
     );
   }
 
-  const p = platformIcon[service.platform] ?? platformIcon.instagram;
+  const p = platformIcon[service.platform?.toLowerCase()] ?? platformIcon.instagram;
   const PIcon = p.icon;
 
   return (

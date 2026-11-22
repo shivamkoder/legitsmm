@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import {
   Bitcoin,
   ChevronDown,
@@ -12,8 +13,17 @@ import {
   Wallet,
 } from "lucide-react";
 import SlideCommit from "@/components/paybutton";
-import WalletDeposit from "@/components/walletdeposit";
 import { createClient } from "@/lib/supabase/client";
+
+const WalletDeposit = dynamic(() => import("@/components/walletdeposit"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-48 flex-col items-center justify-center gap-2 rounded-2xl border border-[#7FFF00]/15 bg-[#050a02] text-sm text-[#7FFF00]/70">
+      <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#7FFF00] border-t-transparent" />
+      <span>Loading Web3 Wallet...</span>
+    </div>
+  ),
+});
 
 type BonusTier = { over: number; percent: number }; // applies when amount > over
 

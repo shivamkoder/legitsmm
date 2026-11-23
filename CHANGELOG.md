@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Full Spotify MoreThanPanel Catalog (24 Active Services across all 6 Categories):**
+  - **Plays (8 services):** Global (`3541`), Europe (`3542`), Best Seller (`10215`), USA Advance (`2858`), Global Advance (`2547`), Global Premium Mobile (`7689`), USA Premium Mobile (`7690`), USA Power Radio (`6770`).
+  - **Monthly Listeners (3 services):** Global (`9434`), USA (`9432`), Turkey (`9433`).
+  - **Followers (5 services):** Global (`2585`), USA (`2720`), UK (`2719`), Germany (`2717`), India (`4452`).
+  - **Saves (1 service):** Track & Album Saves 30-Day (`3240`).
+  - **Playlist Plays (4 services):** UK (`4257`), France (`4258`), Germany (`4259`), Italy (`4260`).
+  - **Podcast (3 services):** Podcast Followers (`2473`), USA Podcast Listeners (`4997`), UK Podcast Listeners (`5010`).
 - **Full TikTok MoreThanPanel Catalog (30 Active Services across all 7 Categories):**
   - **Followers (5 services):** Bot (`9405`), Mix 30-Day (`5760`), Mix Lifetime (`5447`), Mix Auto Refill (`9419`), Organic Task-Based (`9594`).
   - **Likes (5 services):** Bot (`1128`), Mix 30-Day (`1126`), Mix Lifetime (`1106`), Organic Real Looking (`5735`), Organic High Speed (`5736`).

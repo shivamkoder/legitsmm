@@ -1,6 +1,6 @@
 import React from "react";
 import { Check, X, Zap, PlusCircle, HeartPulse, Users, Bot, Sparkles, Shuffle } from "lucide-react";
-import { SiInstagram, SiYoutube, SiTiktok, SiTelegram, SiFacebook, SiX } from "react-icons/si";
+import { SiInstagram, SiYoutube, SiTiktok, SiTelegram, SiFacebook, SiX, SiSpotify } from "react-icons/si";
 import type { ServiceItem } from "@/components/orderform";
 
 const platformIcon: Record<string, { icon: React.ElementType; bg: string }> = {
@@ -10,6 +10,7 @@ const platformIcon: Record<string, { icon: React.ElementType; bg: string }> = {
   telegram: { icon: SiTelegram, bg: "bg-[#2AABEE]" },
   facebook: { icon: SiFacebook, bg: "bg-[#1877F2]" },
   x: { icon: SiX, bg: "bg-black border border-white/20" },
+  spotify: { icon: SiSpotify, bg: "bg-[#1DB954]" },
 };
 
 function Stat({

@@ -53,6 +53,9 @@ export const PLATFORM_CATEGORIES: Record<string, string[]> = {
     "Views",
     "Shares",
     "Comments",
+    "Post Reactions",
+    "Group Members",
+    "Live Stream Views",
   ],
   x: [
     "Followers",

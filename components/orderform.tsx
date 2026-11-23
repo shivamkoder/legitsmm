@@ -75,7 +75,8 @@ export const PLATFORM_CATEGORIES: Record<string, string[]> = {
     "Monthly Listeners",
     "Followers",
     "Saves",
-    "Playlist Followers",
+    "Playlist Plays",
+    "Podcast",
   ],
   twitch: [
     "Followers",

@@ -5,6 +5,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint ."
+    
   },
   "dependencies": {
     "@reown/appkit": "^1.6.0",

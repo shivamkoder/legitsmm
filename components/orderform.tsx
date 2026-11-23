@@ -39,6 +39,7 @@ export const PLATFORM_CATEGORIES: Record<string, string[]> = {
     "Shares",
     "Comments",
     "Saves",
+    "Live Stream",
   ],
   telegram: [
     "Members",

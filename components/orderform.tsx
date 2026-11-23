@@ -108,6 +108,7 @@ export type ServiceItem = Option & {
   min: number;
   max: number;
   platform: string; // "instagram", "youtube", ...
+  type?: string; // "default", "custom_comments", "geo_targeted"
   startTime: string;
   speed: string;
   refill: string | null; // null = no refill
@@ -204,6 +205,7 @@ export function OrderForm({
   const [serviceId, setServiceId] = useState("");
   const [link, setLink] = useState("");
   const [quantity, setQuantity] = useState("");
+  const [comments, setComments] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -320,6 +322,12 @@ export function OrderForm({
         else if (lower.includes("mix")) aud = "Mix";
         else aud = "Organic";
       }
+      let refillLabel: string | null = null;
+      if (s.refill) {
+        if (s.refill_days && s.refill_days >= 365) refillLabel = "Lifetime";
+        else if (s.refill_days) refillLabel = `${s.refill_days}-Day`;
+        else refillLabel = "Yes";
+      }
       return {
         id: String(s.id),
         label: s.name,
@@ -327,7 +335,8 @@ export function OrderForm({
         min: Number(s.min_qty),
         max: Number(s.max_qty),
         platform: s.platform,
-        refill: s.refill ? "Yes" : null,
+        type: s.type ?? "default",
+        refill: refillLabel,
         audience: aud,
         startTime: s.start_time ?? "Instant",
         speed: s.speed ?? "10K - 100K/Day",
@@ -364,7 +373,17 @@ export function OrderForm({
     setFormError(null);
   };
 
-  const qty = Number(quantity) || 0;
+  const isCustomComments = service?.type === "custom_comments";
+  const commentLines = useMemo(
+    () =>
+      comments
+        .split("\n")
+        .map((l) => l.trim())
+        .filter(Boolean),
+    [comments],
+  );
+
+  const qty = isCustomComments ? commentLines.length : Number(quantity) || 0;
   const charge = service ? (qty / 1000) * service.rate : 0;
   const formattedCharge = qty > 0 ? `$${charge.toFixed(4)}` : "";
 
@@ -392,10 +411,18 @@ export function OrderForm({
     setSubmitting(true);
     try {
       // The server recomputes price and checks balance. Nothing here is trusted.
+      const payload: Record<string, unknown> = {
+        serviceId: service.id,
+        link: link.trim(),
+        quantity: qty,
+      };
+      if (isCustomComments) {
+        payload.extra = { comments: commentLines.join("\n") };
+      }
       const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ serviceId: service.id, link: link.trim(), quantity: qty }),
+        body: JSON.stringify(payload),
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json.error ?? "Could not place order.");
@@ -407,6 +434,7 @@ export function OrderForm({
       );
       setLink("");
       setQuantity("");
+      setComments("");
     } catch (e) {
       setFormError(e instanceof Error ? e.message : "Could not place order.");
     } finally {
@@ -503,32 +531,55 @@ export function OrderForm({
         </div>
       </div>
 
+      {/* Custom Comments (1 per line) */}
+      {isCustomComments && (
+        <div>
+          <Label>Comments (1 per line)</Label>
+          <div className={`${fieldBase} overflow-hidden p-0`}>
+            <textarea
+              rows={5}
+              value={comments}
+              onChange={(e) => setComments(e.target.value)}
+              placeholder={"Great post!\nLove this content\nKeep it up!"}
+              className="w-full resize-y bg-transparent px-4 py-3 text-[13px] text-white/90 outline-none placeholder:text-white/30"
+            />
+          </div>
+          <p className="mt-1.5 text-xs text-white/40">
+            {commentLines.length} {commentLines.length === 1 ? "comment" : "comments"} entered
+            {service ? ` (Min: ${service.min.toLocaleString()} - Max: ${service.max.toLocaleString()})` : ""}
+          </p>
+        </div>
+      )}
+
       {/* Quantity */}
       <div>
         <Label>Quantity</Label>
-        <div className={`${fieldBase} gap-2 p-1.5`}>
+        <div className={`${fieldBase} gap-2 p-1.5 ${isCustomComments ? "opacity-70" : ""}`}>
           <button
             type="button"
+            disabled={isCustomComments}
             onClick={() => adjust(-step)}
             aria-label="Decrease quantity"
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#7FFF00] text-black hover:bg-[#7FFF00]/85"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#7FFF00] text-black hover:bg-[#7FFF00]/85 disabled:opacity-40"
           >
             <Minus className="h-4 w-4" strokeWidth={2.5} />
           </button>
           <input
             type="number"
             inputMode="numeric"
+            readOnly={isCustomComments}
             min={service?.min}
             max={service?.max}
-            value={quantity}
+            value={isCustomComments ? String(commentLines.length) : quantity}
             onChange={(e) => setQuantity(e.target.value)}
             className="w-full bg-transparent text-center outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
           />
           <button
             type="button"
+            disabled={isCustomComments}
             onClick={() => adjust(step)}
             aria-label="Increase quantity"
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#7FFF00] text-black hover:bg-[#7FFF00]/85"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#7FFF00] text-black hover:bg-[#7FFF00]/85 disabled:opacity-40"
           >
             <Plus className="h-4 w-4" strokeWidth={2.5} />
           </button>

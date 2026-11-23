@@ -111,6 +111,11 @@ export function ServiceDetails({ service }: { service: ServiceItem | null }) {
         <p className="mt-1 text-[13px] text-white/60">
           Min: {service.min.toLocaleString()} - Max: {service.max.toLocaleString()}
         </p>
+        {service.type === "custom_comments" && (
+          <p className="mt-1.5 text-[12px] text-[#7FFF00]/80">
+            Custom Comments: Enter 1 comment per line; quantity is calculated automatically.
+          </p>
+        )}
       </div>
     </div>
   );

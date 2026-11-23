@@ -1,5 +1,5 @@
 import React from "react";
-import { Check, X, Zap, PlusCircle, HeartPulse } from "lucide-react";
+import { Check, X, Zap, PlusCircle, HeartPulse, Users, Bot, Sparkles, Shuffle } from "lucide-react";
 import { SiInstagram, SiYoutube, SiTiktok, SiTelegram, SiFacebook, SiX } from "react-icons/si";
 import type { ServiceItem } from "@/components/orderform";
 
@@ -80,6 +80,26 @@ export function ServiceDetails({ service }: { service: ServiceItem | null }) {
               <X className="h-4 w-4 text-red-400" strokeWidth={2.5} />
               No Refill
             </span>
+          )}
+        </Stat>
+        <Stat icon={Users} label="Audience Type">
+          {service.audience?.toLowerCase() === "organic" ? (
+            <span className="flex items-center gap-1.5 text-[#7FFF00]">
+              <Sparkles className="h-4 w-4 text-[#7FFF00]" strokeWidth={2} />
+              Organic
+            </span>
+          ) : service.audience?.toLowerCase() === "mix" ? (
+            <span className="flex items-center gap-1.5 text-sky-400">
+              <Shuffle className="h-4 w-4 text-sky-400" strokeWidth={2} />
+              Mix
+            </span>
+          ) : service.audience?.toLowerCase() === "bot" ? (
+            <span className="flex items-center gap-1.5 text-amber-400">
+              <Bot className="h-4 w-4 text-amber-400" strokeWidth={2} />
+              Bot
+            </span>
+          ) : (
+            <span className="text-white">{service.audience || "Organic"}</span>
           )}
         </Stat>
       </div>

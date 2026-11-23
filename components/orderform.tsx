@@ -111,6 +111,7 @@ export type ServiceItem = Option & {
   startTime: string;
   speed: string;
   refill: string | null; // null = no refill
+  audience: string; // "Organic", "Mix", "Bot"
   linkHint: string;
 };
 
@@ -311,18 +312,28 @@ export function OrderForm({
       return a.id - b.id;
     });
 
-    return sorted.map((s) => ({
-      id: String(s.id),
-      label: s.name,
-      rate: Number(s.rate),
-      min: Number(s.min_qty),
-      max: Number(s.max_qty),
-      platform: s.platform,
-      refill: s.refill ? "Yes" : null,
-      startTime: s.start_time ?? "Instant",
-      speed: s.speed ?? "10K - 100K/Day",
-      linkHint: s.link_hint ?? "Instagram Profile / Post link",
-    }));
+    return sorted.map((s) => {
+      let aud = s.audience;
+      if (!aud) {
+        const lower = s.name.toLowerCase();
+        if (lower.includes("bot")) aud = "Bot";
+        else if (lower.includes("mix")) aud = "Mix";
+        else aud = "Organic";
+      }
+      return {
+        id: String(s.id),
+        label: s.name,
+        rate: Number(s.rate),
+        min: Number(s.min_qty),
+        max: Number(s.max_qty),
+        platform: s.platform,
+        refill: s.refill ? "Yes" : null,
+        audience: aud,
+        startTime: s.start_time ?? "Instant",
+        speed: s.speed ?? "10K - 100K/Day",
+        linkHint: s.link_hint ?? "Instagram Profile / Post link",
+      };
+    });
   }, [platformServices, activeCategory]);
 
   // Auto-select the first service in the list if none selected or current is invalid

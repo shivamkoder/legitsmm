@@ -13,6 +13,7 @@ export type DbService = {
   min_qty: number;
   max_qty: number;
   refill: boolean;
+  audience?: string | null;
   start_time?: string | null;
   speed?: string | null;
   link_hint?: string | null;
@@ -25,7 +26,7 @@ export async function fetchServices(): Promise<DbService[]> {
   for (let from = 0; ; from += 1000) {
     const { data, error } = await supabase
       .from("services")
-      .select("id, platform, category, name, type, rate, min_qty, max_qty, refill, start_time, speed, link_hint")
+      .select("id, platform, category, name, type, rate, min_qty, max_qty, refill, audience, start_time, speed, link_hint")
       .eq("is_active", true)
       .order("id")
       .range(from, from + 999);
@@ -35,6 +36,7 @@ export async function fetchServices(): Promise<DbService[]> {
       rate: Number(s.rate) || 0,
       min_qty: Number(s.min_qty ?? 1),
       max_qty: Number(s.max_qty ?? 1000000),
+      audience: s.audience || null,
     }));
     all.push(...mapped);
     if (!data || data.length < 1000) break;

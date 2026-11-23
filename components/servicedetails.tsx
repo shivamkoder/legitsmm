@@ -1,6 +1,20 @@
 import React from "react";
 import { Check, X, Zap, PlusCircle, HeartPulse, Users, Bot, Sparkles, Shuffle } from "lucide-react";
-import { SiInstagram, SiYoutube, SiTiktok, SiTelegram, SiFacebook, SiX, SiSpotify } from "react-icons/si";
+import {
+  SiInstagram,
+  SiYoutube,
+  SiTiktok,
+  SiTelegram,
+  SiFacebook,
+  SiX,
+  SiSpotify,
+  SiTwitch,
+  SiPinterest,
+  SiSnapchat,
+  SiDiscord,
+  SiReddit,
+  SiWhatsapp,
+} from "react-icons/si";
 import type { ServiceItem } from "@/components/orderform";
 
 const platformIcon: Record<string, { icon: React.ElementType; bg: string }> = {
@@ -11,6 +25,12 @@ const platformIcon: Record<string, { icon: React.ElementType; bg: string }> = {
   facebook: { icon: SiFacebook, bg: "bg-[#1877F2]" },
   x: { icon: SiX, bg: "bg-black border border-white/20" },
   spotify: { icon: SiSpotify, bg: "bg-[#1DB954]" },
+  twitch: { icon: SiTwitch, bg: "bg-[#9146FF]" },
+  pinterest: { icon: SiPinterest, bg: "bg-[#E60023]" },
+  snapchat: { icon: SiSnapchat, bg: "bg-[#FFFC00] text-black" },
+  discord: { icon: SiDiscord, bg: "bg-[#5865F2]" },
+  reddit: { icon: SiReddit, bg: "bg-[#FF4500]" },
+  whatsapp: { icon: SiWhatsapp, bg: "bg-[#25D366]" },
 };
 
 function Stat({

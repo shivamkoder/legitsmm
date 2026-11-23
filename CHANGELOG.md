@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Full Instagram MoreThanPanel Catalog Expansion (26 Active Services across all 7 Categories):**
+  - **Followers (4 services):** Bot (`5752`), Mix 30-Day (`5839`), Organic 30-Day (`9107`), Organic Lifetime (`10268`).
+  - **Likes (5 services):** Bot (`2847`), Mix 30-Day (`2499`), Mix Lifetime (`2498`), Organic Drip-feed (`9033`), USA Targeted (`8024`).
+  - **Comments (3 services):** Random Non-Drop (`1850`), Budget Custom Comments (`4641`), Organic Custom Comments (`10234`).
+  - **Shares (3 services):** Fast Bot (`5707`), Mix Direct (`2960`), Organic Shares + Reach (`5208`).
+  - **Saves (3 services):** Bot (`2947`), Organic Power Saves 30-Day (`9887`), Mix High Speed (`9884`).
+  - **Impressions (3 services):** Bot Reach + Impressions (`5030`), Mix High Max (`2959`), Organic 30-Day (`8134`).
+- **Custom Comments Order Form UI:** Automatic multi-line comment textarea, live line-count quantity calculation, and `extra.comments` submission for `custom_comments` services.
+- **Refill Window Labels:** Surfaced `refill_days` from Supabase to show exact `30-Day Refill` and `Lifetime Refill` badges in `ServiceDetails`.
+
 ### Planned
 - Automated ticket support system with real-time customer messaging.
 - Mass order batch submission parser.

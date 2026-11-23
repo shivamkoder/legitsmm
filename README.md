@@ -1,109 +1,138 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+# LegitSMM 🚀
 
-<p align="center">
- The fastest way to build apps with Next.js and Supabase
-</p>
+<div align=\"center\">
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+**High-Performance, Web3-Powered Social Media Growth Platform**
 
-## Features
+[![Next.js](https://img.shields.io/badge/Next.js-16.4-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![Web3](https://img.shields.io/badge/Web3-Wagmi%20%26%20AppKit-F16822?style=for-the-badge&logo=ethereum)](https://wagmi.sh/)
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Proxy
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+[Features](#-key-features) • [Architecture](#-system-architecture) • [Tech Stack](#-tech-stack) • [Getting Started](#-getting-started) • [Documentation](#-documentation)
 
-## Demo
+</div>
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+---
 
-## Deploy to Vercel
+## 🌟 Overview
 
-Vercel deployment will guide you through creating a Supabase account and project.
+**LegitSMM** is an enterprise-grade Social Media Marketing (SMM) reseller and growth infrastructure platform. Built on Next.js 16 App Router, React 19, and Supabase PostgreSQL, LegitSMM combines modern Web3 on-chain funding with wholesale provider automation, atomic double-entry ledger transactions, and automated order status reconciliation.
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+---
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
+## ⚡ Key Features
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+- **🎯 Curated High-Retention Services:** Fine-grained service catalog for Instagram with transparent audience classification (**Organic**, **Mix**, **Bot**), speed ratings, start times, and guaranteed refill windows.
+- **⚡ Atomic Single-Supplier Dispatch:** Hardcoded 1-to-1 supplier mapping per service with zero unstable fallback loops. Orders are atomically validated and charged via PostgreSQL row locks (`FOR UPDATE`).
+- **🛡️ Instant Automated Refunds:** If a wholesale provider rejects or fails an order, the system immediately cancels the order and refunds the user's ledger balance with an immutable transaction audit record.
+- **💎 Multi-Chain Web3 Payments:** Native Web3 deposit flow supporting EVM and SVM networks (Polygon, Arbitrum, Base, BNB Chain) with MetaMask, Phantom, Coinbase Wallet, and Rainbow via `@reown/appkit` and Wagmi.
+- **🔄 Automated Status Reconciliation:** Background cron powered by Upstash QStash polling wholesale provider states and marking orders `processing`, `in-progress`, `completed`, or `partial`.
+- **📊 Real-time Dashboard:** Live user balance updates, orders history, filterable category pills, and dynamic live price calculations.
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
+---
 
-## Clone and run locally
+## 🏗️ System Architecture
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
+```mermaid
+flowchart TD
+    User([User / Client]) -->|1. Select Service & Quantity| OrderForm[New Order UI]
+    OrderForm -->|2. POST /api/orders| OrdersAPI[Orders API Handler]
+    
+    subgraph Supabase [Supabase PostgreSQL Engine]
+        OrdersAPI -->|3. rpc: place_order| PlaceOrderRPC[place_order RPC]
+        PlaceOrderRPC -->|Row Lock FOR UPDATE| BalanceCheck{Balance >= Charge?}
+        BalanceCheck -->|No| Reject402[Throw insufficient_balance]
+        BalanceCheck -->|Yes| LedgerDebit[apply_transaction: -charge]
+        LedgerDebit --> InsertOrder[Insert orders row: pending]
+    end
+    
+    subgraph Wholesale [Provider Fulfillment]
+        OrdersAPI -->|4. Dispatch Order| MTP[MoreThanPanel API v2]
+        MTP -->|Accepted| SaveSupplierID[Store supplier_order_id]
+        MTP -->|Definitive Rejection| AutoRefund[rpc: finalize_order -> canceled & refund]
+    end
+    
+    subgraph BackgroundCron [Asynchronous Polling]
+        QStash[Upstash QStash Cron] -->|POST /api/jobs/checkstatus| StatusPoller[Status Poller]
+        StatusPoller -->|Fetch Active Statuses| MTP
+        StatusPoller -->|Finalize Order| FinalizeRPC[rpc: finalize_order]
+    end
+```
 
-2. Create a Next.js app using the Supabase Starter template npx command
+---
 
-   ```bash
-   npx create-next-app --example with-supabase with-supabase-app
-   ```
+## 🛠️ Tech Stack
 
-   ```bash
-   yarn create next-app --example with-supabase with-supabase-app
-   ```
+| Layer | Technology | Details |
+| :--- | :--- | :--- |
+| **Framework** | [Next.js 16](https://nextjs.org/) | App Router, Server Actions, Route Handlers, Turbopack |
+| **Frontend** | [React 19](https://react.dev/), [Tailwind CSS](https://tailwindcss.com/) | Radix UI, Framer Motion, Lucide & React Icons |
+| **Database & Auth**| [Supabase](https://supabase.com/) | PostgreSQL 15, Row Level Security (RLS), PL/pgSQL RPCs |
+| **Web3 & Wallets** | [Wagmi](https://wagmi.sh/), [AppKit](https://reown.com/) | EVM multi-chain wallet connections, Viem, Token deposits |
+| **Wholesale API** | [MoreThanPanel](https://morethanpanel.com/) | Automated catalog sync, direct single-supplier order execution |
+| **Background Jobs**| [Upstash QStash](https://upstash.com/docs/qstash) | Serverless webhook crons for status synchronization |
 
-   ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
-   ```
+---
 
-3. Use `cd` to change into the app's directory
+## 🚀 Getting Started
 
-   ```bash
-   cd with-supabase-app
-   ```
+### Prerequisites
 
-4. Rename `.env.example` to `.env.local` and update the following:
+- **Node.js** >= 20.x
+- **npm** or **pnpm**
+- **Supabase Account** with database project created
+- **Upstash QStash** account for cron verification
 
-  ```env
-  NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=[INSERT SUPABASE PROJECT API PUBLISHABLE OR ANON KEY]
-  ```
-  > [!NOTE]
-  > This example uses `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, which refers to Supabase's new **publishable** key format.
-  > Both legacy **anon** keys and new **publishable** keys can be used with this variable name during the transition period. Supabase's dashboard may show `NEXT_PUBLIC_SUPABASE_ANON_KEY`; its value can be used in this example.
-  > See the [full announcement](https://github.com/orgs/supabase/discussions/29260) for more information.
+### 1. Clone & Install
 
-  Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` can be found in [your Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true)
+```bash
+git clone https://github.com/shivamkoder/legitsmm.git
+cd legitsmm
+npm install
+```
 
-5. You can now run the Next.js local development server:
+### 2. Configure Environment Variables
 
-   ```bash
-   npm run dev
-   ```
+Create a `.env.local` file in the root directory:
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+```env
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=https://<your-project>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi...
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOi...
 
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
+# Wholesale Supplier Keys
+MORETHANPANEL_API_KEY=your_morethanpanel_api_key
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+# Web3 & Reown Configuration
+NEXT_PUBLIC_REOWN_PROJECT_ID=your_reown_project_id
 
-## Feedback and issues
+# Upstash QStash (Cron Protection)
+QSTASH_CURRENT_SIGNING_KEY=sig_...
+QSTASH_NEXT_SIGNING_KEY=sig_...
+```
 
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
+### 3. Run Development Server
 
-## More Supabase examples
+```bash
+npm run dev
+```
 
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+Open [http://localhost:3000](http://localhost:3000) with your browser.
+
+---
+
+## 📖 Documentation
+
+- [**Architecture & Database Design**](docs/ARCHITECTURE.md) - Database schemas, PL/pgSQL RPC functions, and transaction ledger.
+- [**API Reference**](docs/API.md) - Complete documentation of `/api/orders`, `/api/jobs/checkstatus`, and Web3 routes.
+- [**Deployment Guide**](docs/DEPLOYMENT.md) - Production deployment instructions on Vercel, Supabase, and QStash.
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

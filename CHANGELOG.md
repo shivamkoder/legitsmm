@@ -10,6 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Full YouTube MoreThanPanel Catalog (30 Active Services across all 8 Categories):**
+  - **Views (6 services):** Bot (`2961`), Mix 10-Day (`9550`), Mix 30-Day (`9220`), Mix Lifetime (`9549`), Organic Views+Likes (`9551`), Organic Views+Likes+Comments (`9552`).
+  - **Subscribers (5 services):** Bot (`10226`), Organic Looking (`8073`), Mix 30-Day (`8355`), Mix 30-Day High Speed (`10316`), Organic Drip-Feed (`10206`).
+  - **Likes (3 services):** Organic 30-Day (`1857`), Organic Drip-Feed (`9663`), Turkey Targeted (`5710`).
+  - **Comments (4 services):** Mix Custom 30-Day (`8139`), Mix Custom Fast (`7990`), USA Organic Custom (`7991`), Comment Likes Lifetime (`912`).
+  - **Watch Time (3 services):** 3+ Min 90-Day (`4879`), 60+ Min 30-Day (`10236`), 5+ Min 90-Day (`3589`).
+  - **Shares (3 services):** Lifetime 50/Day (`6250`), 100/Day (`6251`), 250/Day (`6252`).
+  - **Live Stream Views (3 services):** 15m (`1547`), 15m 100% Concurrent (`10163`), Live Reactions (`7291`).
+  - **Shorts Views (3 services):** Bot (`5713`), Mix 30-Day (`5714`), Organic Lifetime (`862`).
 - **Full Facebook MoreThanPanel Catalog (35 Active Services across all 9 Categories):**
   - **Followers (3 services):** Bot (`4138`), Mix 30-Day (`1402`), Mix Lifetime (`8927`).
   - **Page Likes (5 services):** Bot (`985`), Mix 30-Day (`1986`), Mix Lifetime (`9885`), Organic Real-Looking (`8129`), USA Organic 30-Day (`8435`).

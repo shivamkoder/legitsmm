@@ -42,8 +42,9 @@ export const PLATFORM_CATEGORIES: Record<string, string[]> = {
     "Members",
     "Channel Views",
     "Post Reactions",
-    "Bot Starts",
+    "Shares",
     "Comments",
+    "Channel Boosts",
   ],
   facebook: [
     "Followers",

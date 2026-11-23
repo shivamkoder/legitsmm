@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Full Telegram MoreThanPanel Catalog (21 Active Services across all 6 Categories):**
+  - **Members (5 services):** Fast Bot (`1640`), Mix 90-Day (`5753`), Mix Lifetime (`9244`), Organic Online 30-Day (`8942`), Premium 5-Day (`7516`).
+  - **Channel Views (4 services):** Fast Post/Channel (`9863`), Last 5 Posts (`4880`), Last 10 Posts (`2949`), Future 5 Posts (`8500`).
+  - **Post Reactions (4 services):** Mix Positive (`8510`), Organic Positive Low-Drop (`2737`), Fire (`7681`), Negative Low-Drop (`2738`).
+  - **Shares (3 services):** Fast Post Shares (`8509`), Global Mix Shares + Views (`2936`), Direct Repost (`2935`).
+  - **Comments (3 services):** USA (`3526`), Indian (`3529`), Arabic (`3528`) Random Comments + Static Views.
+  - **Channel Boosts (2 services):** 1-Day Story Activate (`7461`), 7-Day Story Activate (`7462`).
 - **Full Instagram MoreThanPanel Catalog Expansion (26 Active Services across all 7 Categories):**
   - **Followers (4 services):** Bot (`5752`), Mix 30-Day (`5839`), Organic 30-Day (`9107`), Organic Lifetime (`10268`).
   - **Likes (5 services):** Bot (`2847`), Mix 30-Day (`2499`), Mix Lifetime (`2498`), Organic Drip-feed (`9033`), USA Targeted (`8024`).

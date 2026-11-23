@@ -29,6 +29,8 @@ export const PLATFORM_CATEGORIES: Record<string, string[]> = {
     "Comments",
     "Watch Time",
     "Shares",
+    "Live Stream Views",
+    "Shorts Views",
   ],
   tiktok: [
     "Followers",

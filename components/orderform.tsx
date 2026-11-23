@@ -66,6 +66,8 @@ export const PLATFORM_CATEGORIES: Record<string, string[]> = {
     "Views",
     "Comments",
     "Impressions",
+    "Space Listeners",
+    "Poll Votes",
   ],
   spotify: [
     "Plays",

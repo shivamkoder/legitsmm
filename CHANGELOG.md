@@ -10,6 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Full Facebook MoreThanPanel Catalog (35 Active Services across all 9 Categories):**
+  - **Followers (3 services):** Bot (`4138`), Mix 30-Day (`1402`), Mix Lifetime (`8927`).
+  - **Page Likes (5 services):** Bot (`985`), Mix 30-Day (`1986`), Mix Lifetime (`9885`), Organic Real-Looking (`8129`), USA Organic 30-Day (`8435`).
+  - **Post Likes (5 services):** Bot (`578`), Mix 30-Day (`5133`), Mix Lifetime (`5207`), Mix Drip-Feed (`9062`), Organic Low-Drop (`8130`).
+  - **Views (3 services):** Mix Lifetime Video/Reels (`4715`), Mix Non-Drop (`10187`), Organic 30-Day (`680`).
+  - **Shares (2 services):** Mix Non-Drop (`10195`), Organic Photo & Post (`10196`).
+  - **Comments (4 services):** Mix Custom 30-Day (`701`), Organic Custom Non-Drop (`10188`), Random English (`10192`), Organic Random (`9795`).
+  - **Post Reactions (5 services):** Love (`5986`), Wow (`5988`), Haha (`5989`), Sad (`5990`), Angry (`5991`).
+  - **Group Members (4 services):** Bot (`1724`), Mix 30-Day (`720`), Mix Lifetime (`10227`), Organic Old Accounts (`9344`).
+  - **Live Stream Views (4 services):** 15m (`618`), 30m (`619`), 60m (`620`), 90m (`621`).
 - **Full Telegram MoreThanPanel Catalog (21 Active Services across all 6 Categories):**
   - **Members (5 services):** Fast Bot (`1640`), Mix 90-Day (`5753`), Mix Lifetime (`9244`), Organic Online 30-Day (`8942`), Premium 5-Day (`7516`).
   - **Channel Views (4 services):** Fast Post/Channel (`9863`), Last 5 Posts (`4880`), Last 10 Posts (`2949`), Future 5 Posts (`8500`).

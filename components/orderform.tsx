@@ -86,25 +86,26 @@ export const PLATFORM_CATEGORIES: Record<string, string[]> = {
   ],
   pinterest: [
     "Followers",
-    "Repins",
-    "Board Followers",
-    "Reactions",
+    "Likes",
+    "Saves",
+    "Comments",
   ],
   snapchat: [
     "Followers",
     "Story Views",
-    "Spotlight Views",
+    "Likes",
   ],
   discord: [
     "Server Members",
     "Online Members",
     "Reactions",
+    "Poll Votes",
   ],
   reddit: [
     "Upvotes",
-    "Post Karma",
     "Subreddit Subscribers",
-    "Comments",
+    "Views",
+    "Shares",
   ],
   whatsapp: [
     "Channel Members",

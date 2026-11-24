@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { LegalFooter } from "@/components/legal-footer";
 import { Logo } from "@/components/logo";
 import { ServicesMenu } from "@/components/services-menu";
-import { Affiliates } from "@/components/affiliates";
 import { ImageComparison } from "@/components/comparison";
 import { SqueezeCarousel, type SqueezeSlide } from "@/components/slides";
 import InfoCards from "@/components/info";

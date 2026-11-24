@@ -9,7 +9,6 @@ import {
   Bell,
   ShoppingBag,
   CircleDollarSign,
-  Users,
   Code,
   Headset,
   LogOut,
@@ -28,7 +27,6 @@ import { Tickets } from "@/components/tickets";
 import { OrderForm, type ServiceItem } from "@/components/orderform";
 import { ServiceDetails } from "@/components/servicedetails";
 import { Logo } from "@/components/logo";
-import { Affiliates } from "@/components/affiliates";
 import { MassOrder } from "@/components/massorder";
 
 export type NavItemData = {
@@ -46,7 +44,6 @@ const navItems: NavItemData[] = [
   { id: "updates", title: "Updates", icon: Bell },
   { id: "orders", title: "Orders", icon: ShoppingBag },
   { id: "add-funds", title: "Add funds", icon: CircleDollarSign },
-  { id: "affiliates", title: "Affiliates", icon: Users },
   { id: "api", title: "API", icon: Code },
   { id: "tickets", title: "Tickets", icon: Headset },
 ];
@@ -371,8 +368,6 @@ export default function SidebarNavPreview() {
               <Orders />
             ) : activeId === "services" ? (
               <Services onNavigate={handleSelect} />
-            ) : activeId === "affiliates" ? (
-              <Affiliates code={userProfile.referral_code || undefined} />
             ) : activeId === "tickets" ? (
               <Tickets />
             ) : (

@@ -190,8 +190,11 @@ export function Services({ onNavigate }: { onNavigate?: (id: string) => void }) 
     const q = query.trim().toLowerCase();
     const list = all.filter(
       (s) =>
-        (platform === "all" || s.platform === platform) &&
-        (!q || s.name.toLowerCase().includes(q) || s.id.includes(q)),
+        (platform === "all" || s.platform.toLowerCase() === platform.toLowerCase()) &&
+        (!q ||
+          s.name.toLowerCase().includes(q) ||
+          s.id.includes(q) ||
+          s.platform.toLowerCase().includes(q)),
     );
     if (sort === "price-asc") list.sort((a, b) => a.rate - b.rate);
     if (sort === "price-desc") list.sort((a, b) => b.rate - a.rate);

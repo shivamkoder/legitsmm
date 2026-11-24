@@ -28,6 +28,7 @@ import { OrderForm, type ServiceItem } from "@/components/orderform";
 import { ServiceDetails } from "@/components/servicedetails";
 import { Logo } from "@/components/logo";
 import { MassOrder } from "@/components/massorder";
+import { ApiPage } from "@/components/apipage";
 
 export type NavItemData = {
   id: string;
@@ -368,6 +369,8 @@ export default function SidebarNavPreview() {
               <Orders />
             ) : activeId === "services" ? (
               <Services onNavigate={handleSelect} />
+            ) : activeId === "api" ? (
+              <ApiPage />
             ) : activeId === "tickets" ? (
               <Tickets />
             ) : (

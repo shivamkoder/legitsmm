@@ -165,3 +165,20 @@ Lists all registered wholesale suppliers, connection status, and endpoint config
 
 ### `POST /api/admin/suppliers`
 Updates wholesale supplier credentials, enables/disables suppliers, or adjusts sync frequencies.
+
+---
+
+## 5. Public Reseller API (SMM Panel v2)
+
+### `POST /api/v2`
+Standard SMM Panel v2 endpoint accepting `application/x-www-form-urlencoded` or `application/json` requests authenticated with a user's hashed API key (`profiles.api_key_hash`).
+
+- **Supported Actions:**
+  - `action=services` — Lists all active services with live retail rates and min/max bounds.
+  - `action=balance` — Returns `{ balance, currency: "USD" }`.
+  - `action=add` — Places an order atomically (`service`, `link`, `quantity`, optional `comments`), tags `source = 'api'`, and returns `{ order }`.
+  - `action=status` — Returns live fulfillment status for a single `order` or comma-separated `orders` (up to 100) scoped to the authenticated user.
+
+### `GET / POST / DELETE /api/account/api-key`
+Session-authenticated routes for managing the signed-in user's API key (stores only SHA-256 hash and display prefix).
+

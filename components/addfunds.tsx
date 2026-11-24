@@ -113,7 +113,7 @@ const methods: Method[] = [
     icon: Wallet,
     instruction: soon,
     min: 5,
-    feePercent: 5,
+    feePercent: 2,
     enabled: false,
   },
   {

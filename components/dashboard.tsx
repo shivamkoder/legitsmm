@@ -10,6 +10,7 @@ import {
   ShoppingBag,
   CircleDollarSign,
   Code,
+  Coins,
   Headset,
   LogOut,
   PanelLeftClose,
@@ -29,6 +30,7 @@ import { ServiceDetails } from "@/components/servicedetails";
 import { Logo } from "@/components/logo";
 import { MassOrder } from "@/components/massorder";
 import { ApiPage } from "@/components/apipage";
+import { Earn } from "@/components/earn";
 
 export type NavItemData = {
   id: string;
@@ -46,6 +48,7 @@ const navItems: NavItemData[] = [
   { id: "orders", title: "Orders", icon: ShoppingBag },
   { id: "add-funds", title: "Add funds", icon: CircleDollarSign },
   { id: "api", title: "API", icon: Code },
+  { id: "earn", title: "Earn", icon: Coins },
   { id: "tickets", title: "Tickets", icon: Headset },
 ];
 
@@ -371,6 +374,13 @@ export default function SidebarNavPreview() {
               <Services onNavigate={handleSelect} />
             ) : activeId === "api" ? (
               <ApiPage />
+            ) : activeId === "earn" ? (
+              <Earn
+                points={userProfile.points}
+                balance={userProfile.balance}
+                status={userProfile.status}
+                onNavigate={handleSelect}
+              />
             ) : activeId === "tickets" ? (
               <Tickets />
             ) : (
